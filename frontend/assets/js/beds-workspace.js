@@ -1,19 +1,37 @@
 /**
  * BALSONS ENTERPRISE WORKSPACE CONTROLLER (BEDS V1.0)
- * Universal Department Switcher, Dual-Sync Google Sheet Engine, & Mobile Responsive Navigation
- * Applicable to all BALSONS operational portals (Safety, HR, Gate Entry, Store, Operations)
+ * Universal Department Switcher, Dedicated Dual-Sync Google Sheet Engine, & Mobile Responsive Navigation
+ * Applicable to all BALSONS operational portals (Safety, HR, Gate Entry, Store, Launcher)
  */
 
 (function() {
-  const PORTAL_SPREADSHEETS = {
-    'store': '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
-    'safety': '1SyOGt6HEu6HJCufAbB2_P6BgF6pEppt28J_8cARaOP0',
-    'hr': '1so_aH05vVxiUJsIK6VS-n7BpGrHWNgn_5EK7RuA3cuw',
-    'gate': '1emZvUYjT-hTduELE4lSboVCtndFfGQ8KC2elpQ6Em9TF4RW6d2VF75J-'
+  const PORTAL_DATABASES = {
+    'store': {
+      id: '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
+      name: 'Store',
+      fullName: 'Store & Heavy Rigging Inventory Master'
+    },
+    'safety': {
+      id: '1SyOGt6HEu6HJCufAbB2_P6BgF6pEppt28J_8cARaOP0',
+      name: 'Safety',
+      fullName: 'Safety, EHS & PTW Governance'
+    },
+    'hr': {
+      id: '1so_aH05vVxiUJsIK6VS-n7BpGrHWNgn_5EK7RuA3cuw',
+      name: 'HR',
+      fullName: 'HR & Dual-Wage Payroll Master'
+    },
+    'gate': {
+      id: '1emZvUYjT-hTduELE4lSboVCtndFfGQ8KC2elpQ6Em9TF4RW6d2VF75J-',
+      name: 'Gate',
+      fullName: 'Gate Entry & Turnstile Access Master'
+    },
+    'launcher': {
+      id: '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
+      name: 'Ecosystem',
+      fullName: 'Central Enterprise Launcher'
+    }
   };
-
-  const SPREADSHEET_ID = '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ';
-  const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SPREADSHEET_ID + '/edit';
 
   const DEPARTMENTS = [
     { code: 'safety', name: '🛡️ Safety & PTW Manager', path: '../BALSONS SAFETY MANAGER/frontend/index.html', rootPath: 'BALSONS SAFETY MANAGER/frontend/index.html' },
@@ -43,11 +61,18 @@
       return 'launcher';
     },
 
+    getCurrentPortalDb: function() {
+      const code = this.getCurrentPortalCode();
+      return PORTAL_DATABASES[code] || PORTAL_DATABASES['launcher'];
+    },
+
     injectEnterpriseTopbar: function() {
       if (document.getElementById('beds-enterprise-topbar')) return;
 
       const currentPortal = this.getCurrentPortalCode();
       const isRoot = currentPortal === 'launcher' || !window.location.pathname.includes('/frontend/');
+      const db = this.getCurrentPortalDb();
+      const spreadsheetUrl = 'https://docs.google.com/spreadsheets/d/' + db.id + '/edit';
 
       const deptLinksHtml = DEPARTMENTS.map(d => {
         const targetHref = isRoot ? d.rootPath : d.path;
@@ -85,13 +110,13 @@
         </div>
 
         <div class="beds-topbar-right">
-          <a href="${SPREADSHEET_URL}" target="_blank" class="beds-topbar-sync-pill" id="bedsSheetSyncPill" title="Store Dedicated Google Spreadsheet (Click to Open: ${SPREADSHEET_ID})">
+          <a href="${spreadsheetUrl}" target="_blank" class="beds-topbar-sync-pill" id="bedsSheetSyncPill" title="${db.fullName} (Click to Open: ${db.id})">
             <span class="pulse-dot"></span>
-            <span class="sync-text">Store DB Sync: <strong>LIVE</strong></span>
-            <span class="sheet-id-chip" style="font-family: monospace; font-size: 9.5px; opacity: 0.85;">${SPREADSHEET_ID.substring(0, 8)}...</span>
+            <span class="sync-text">${db.name} DB Sync: <strong>LIVE</strong></span>
+            <span class="sheet-id-chip" style="font-family: monospace; font-size: 9.5px; opacity: 0.85;">${db.id.substring(0, 8)}...</span>
           </a>
-          <button class="beds-topbar-sync-btn" onclick="BalsonsWorkspace.triggerDualSync()" type="button" title="Force Bi-Directional Dual Sync">
-            ⚡ Sync Store Database
+          <button class="beds-topbar-sync-btn" onclick="BalsonsWorkspace.triggerDualSync()" type="button" title="Force Bi-Directional Dual Sync for ${db.name}">
+            ⚡ Sync ${db.name} Database
           </button>
         </div>
       `;
@@ -107,10 +132,9 @@
     },
 
     injectMobileHamburgerAndDrawer: function() {
-      // 1. Add hamburger button to header if header exists and hamburger missing
       const header = document.querySelector('header');
       if (header && !document.getElementById('btn-mobile-hamburger')) {
-        const brandWrap = header.querySelector('.brand-wrap') || header;
+        const brandWrap = header.querySelector('.brand-wrap') || header.querySelector('.brand') || header;
         const btn = document.createElement('button');
         btn.id = 'btn-mobile-hamburger';
         btn.className = 'beds-mobile-hamburger';
@@ -121,8 +145,10 @@
         header.insertBefore(btn, header.firstChild);
       }
 
-      // 2. Inject Backdrop & Drawer
       if (!document.getElementById('beds-mobile-nav-drawer')) {
+        const db = this.getCurrentPortalDb();
+        const spreadsheetUrl = 'https://docs.google.com/spreadsheets/d/' + db.id + '/edit';
+
         const backdrop = document.createElement('div');
         backdrop.id = 'beds-drawer-backdrop';
         backdrop.className = 'beds-drawer-backdrop';
@@ -138,7 +164,7 @@
               <img src="assets/images/balsons-logo.png" onerror="this.src='https://lh3.googleusercontent.com/d/1HB7sGaQ4f2qq0NNzgBQrSpUe2DJWV4uh'" alt="BALSONS" style="height: 32px; width: auto; object-fit: contain;">
               <div>
                 <strong style="font-size: 13px; color: var(--beds-charcoal-heading); display: block; line-height: 1.2;">BALSONS PORTALS</strong>
-                <small style="font-size: 10px; color: var(--beds-teal-primary); font-weight: 700;">JTRWF MOBILE WORKSPACE</small>
+                <small style="font-size: 10px; color: var(--beds-teal-primary); font-weight: 700;">JTRWF ENTERPRISE WORKSPACE</small>
               </div>
             </div>
             <button class="beds-drawer-close" onclick="BalsonsWorkspace.closeMobileDrawer()">&times;</button>
@@ -151,15 +177,11 @@
               <div style="display: flex; flex-direction: column; gap: 6px;">
                 <button class="beds-drawer-nav-item" onclick="BalsonsWorkspace.triggerDualSync(); BalsonsWorkspace.closeMobileDrawer();" style="background: rgba(16, 185, 129, 0.1); color: #059669; border-color: rgba(16, 185, 129, 0.3);">
                   <span>⚡</span>
-                  <strong>Dual-Sync All Portals Now</strong>
+                  <strong>Dual-Sync ${db.name} DB Now</strong>
                 </button>
                 <button class="beds-drawer-nav-item" onclick="BalsonsWorkspace.handleQuickAction('dossier-360')" style="background: rgba(0, 151, 178, 0.1); color: var(--beds-teal-primary); border-color: rgba(0, 151, 178, 0.3);">
                   <span>📄</span>
                   <strong>360° Workforce Dossier</strong>
-                </button>
-                <button class="beds-drawer-nav-item" onclick="BalsonsWorkspace.handleQuickAction('ptw-studio')" style="background: rgba(0, 151, 178, 0.1); color: var(--beds-teal-primary); border-color: rgba(0, 151, 178, 0.3);">
-                  <span>✍️</span>
-                  <strong>Initiate Permit-to-Work</strong>
                 </button>
               </div>
             </div>
@@ -183,8 +205,8 @@
             <!-- Footer Controls in Drawer -->
             <div style="padding-top: 12px; border-top: 1px solid var(--beds-border-subtle); display: flex; justify-content: space-between; align-items: center;">
               <span style="font-size: 11px; color: var(--beds-text-muted);">BEDS V1.0 · Locked SAM-2026</span>
-              <a href="${SPREADSHEET_URL}" target="_blank" style="font-size: 11px; color: #10B981; font-weight: 700; text-decoration: none;">
-                📊 Open Sheet ↗
+              <a href="${spreadsheetUrl}" target="_blank" style="font-size: 11px; color: #10B981; font-weight: 700; text-decoration: none;">
+                📊 Open ${db.name} Sheet ↗
               </a>
             </div>
           </div>
@@ -212,7 +234,6 @@
       const container = document.getElementById('drawer-dynamic-links');
       if (!container) return;
 
-      // Extract existing navigation tabs or dropdown items
       const links = [];
       document.querySelectorAll('button.beds-nav-tab[data-target], a.beds-dropdown-item[data-target]').forEach(el => {
         const target = el.getAttribute('data-target');
@@ -238,10 +259,16 @@
       this.closeMobileDrawer();
       if (window.BalsonsSafetyApp && typeof window.BalsonsSafetyApp.switchView === 'function') {
         window.BalsonsSafetyApp.switchView(target);
+      } else if (window.BalsonsStoreApp && typeof window.BalsonsStoreApp.switchView === 'function') {
+        window.BalsonsStoreApp.switchView(target);
       } else if (typeof window.switchHrTab === 'function') {
-        window.switchHrTab(target);
+        let t = target.replace('view-', '').replace('tab-', '');
+        if (t === 'dossier-360' || t.includes('dossier')) t = 'dossier-360';
+        window.switchHrTab(t);
       } else if (typeof window.switchTab === 'function') {
-        window.switchTab(target);
+        let t = target.replace('view-', '').replace('tab-', '');
+        if (t === 'dossier-360' || t.includes('dossier')) t = 'gate-dossier-360';
+        window.switchTab(t);
       }
     },
 
@@ -252,12 +279,6 @@
           window.Balsons360Dossier.openModal('EMP-2026-0001');
         } else {
           this.navigateToTarget('view-dossier-360');
-        }
-      } else if (action === 'ptw-studio') {
-        if (window.BalsonsSafetyApp) {
-          window.BalsonsSafetyApp.switchView('view-permit-studio');
-        } else {
-          window.location.href = '../BALSONS SAFETY MANAGER/frontend/index.html';
         }
       }
     },
@@ -312,40 +333,39 @@
       if (this.isDualSyncing) return;
       this.isDualSyncing = true;
 
+      const currentPortal = this.getCurrentPortalCode();
+      const db = this.getCurrentPortalDb();
       const pill = document.getElementById('bedsSheetSyncPill');
       if (pill) {
         pill.style.background = 'rgba(245, 158, 11, 0.2)';
         pill.style.borderColor = '#F59E0B';
         pill.style.color = '#D97706';
-        pill.innerHTML = `<span class="pulse-dot" style="background:#F59E0B;"></span> Syncing Dual Databases...`;
+        pill.innerHTML = `<span class="pulse-dot" style="background:#F59E0B;"></span> Syncing ${db.name} Database...`;
       }
 
-      this.showToast('⏳ Initiating bi-directional Dual Sync with Master Google Sheet & Department Registers...', 'info');
+      this.showToast(`⏳ Initiating Dual Sync with ${db.fullName} (${db.id.substring(0, 8)}...)...`, 'info');
 
       try {
-        // 1. Sync Safety Manager if active
-        if (window.BalsonsSafetyApp && typeof window.BalsonsSafetyApp.loadDashboardData === 'function') {
-          await window.BalsonsSafetyApp.loadDashboardData();
-          if (typeof window.BalsonsSafetyApp.loadPermits === 'function') window.BalsonsSafetyApp.loadPermits();
-          if (typeof window.BalsonsSafetyApp.loadInductions === 'function') window.BalsonsSafetyApp.loadInductions();
+        if (currentPortal === 'safety') {
+          if (window.BalsonsSafetyApp && typeof window.BalsonsSafetyApp.loadDashboardData === 'function') {
+            await window.BalsonsSafetyApp.loadDashboardData();
+            if (typeof window.BalsonsSafetyApp.loadPermits === 'function') window.BalsonsSafetyApp.loadPermits();
+            if (typeof window.BalsonsSafetyApp.loadInductions === 'function') window.BalsonsSafetyApp.loadInductions();
+          }
+        } else if (currentPortal === 'hr') {
+          if (typeof window.loadEmployeesData === 'function') {
+            await window.loadEmployeesData();
+          }
+        } else if (currentPortal === 'gate') {
+          if (typeof window.loadGateDashboard === 'function') {
+            await window.loadGateDashboard();
+          }
+        } else if (currentPortal === 'store') {
+          if (window.BalsonsStoreApp && typeof window.BalsonsStoreApp.refreshData === 'function') {
+            await window.BalsonsStoreApp.refreshData();
+          }
         }
 
-        // 2. Sync HR Manager if active
-        if (typeof window.loadEmployeesData === 'function') {
-          await window.loadEmployeesData();
-        }
-
-        // 3. Sync Gate Entry if active
-        if (typeof window.loadGateDashboard === 'function') {
-          await window.loadGateDashboard();
-        }
-
-        // 4. Sync Store Manager if active
-        if (window.BalsonsStoreApp && typeof window.BalsonsStoreApp.refreshData === 'function') {
-          await window.BalsonsStoreApp.refreshData();
-        }
-
-        // Simulating robust 500ms sync verification
         await new Promise(r => setTimeout(r, 600));
 
         const now = new Date().toLocaleTimeString();
@@ -355,22 +375,21 @@
           pill.style.color = '#10B981';
           pill.innerHTML = `
             <span class="pulse-dot"></span>
-            <span class="sync-text">Store DB Sync: <strong>LIVE</strong></span>
-            <span class="sheet-id-chip" style="font-family: monospace; font-size: 9.5px; opacity: 0.85;">${SPREADSHEET_ID.substring(0, 8)}...</span>
+            <span class="sync-text">${db.name} DB Sync: <strong>LIVE</strong></span>
+            <span class="sheet-id-chip" style="font-family: monospace; font-size: 9.5px; opacity: 0.85;">${db.id.substring(0, 8)}...</span>
           `;
         }
 
-        this.showToast(`✅ Store Dual-Sync Complete: Dedicated Database (${SPREADSHEET_ID.substring(0, 8)}...) & local inventory registers synchronized at ${now}!`, 'success');
+        this.showToast(`✅ ${db.name} Dual-Sync Complete: Dedicated Database (${db.id.substring(0, 8)}...) synchronized with registers at ${now}!`, 'success');
       } catch (err) {
         console.error('Dual Sync Error:', err);
-        this.showToast(`⚠️ Dual-Sync updated local cache with fallback at ${new Date().toLocaleTimeString()}`, 'warning');
+        this.showToast(`⚠️ Dual-Sync fallback engaged at ${new Date().toLocaleTimeString()}`, 'warning');
       } finally {
         this.isDualSyncing = false;
       }
     },
 
     bindGlobalEvents: function() {
-      // Close department dropdown on outside click
       document.addEventListener('click', function(e) {
         const dd = document.getElementById('bedsDeptDropdown');
         if (dd && !dd.contains(e.target)) {
@@ -380,10 +399,8 @@
     }
   };
 
-  // Export to global scope
   window.BalsonsWorkspace = BalsonsWorkspace;
 
-  // Auto-init on DOMContentLoaded
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => BalsonsWorkspace.init());
   } else {
