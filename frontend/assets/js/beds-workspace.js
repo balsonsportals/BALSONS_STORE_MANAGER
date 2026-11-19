@@ -5,7 +5,14 @@
  */
 
 (function() {
-  const SPREADSHEET_ID = '1SyOGt6HEu6HJCufAbB2_P6BgF6pEppt28J_8cARaOP0';
+  const PORTAL_SPREADSHEETS = {
+    'store': '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
+    'safety': '1SyOGt6HEu6HJCufAbB2_P6BgF6pEppt28J_8cARaOP0',
+    'hr': '1so_aH05vVxiUJsIK6VS-n7BpGrHWNgn_5EK7RuA3cuw',
+    'gate': '1emZvUYjT-hTduELE4lSboVCtndFfGQ8KC2elpQ6Em9TF4RW6d2VF75J-'
+  };
+
+  const SPREADSHEET_ID = '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ';
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SPREADSHEET_ID + '/edit';
 
   const DEPARTMENTS = [
@@ -78,13 +85,13 @@
         </div>
 
         <div class="beds-topbar-right">
-          <a href="${SPREADSHEET_URL}" target="_blank" class="beds-topbar-sync-pill" id="bedsSheetSyncPill" title="Live Master Google Spreadsheet (Click to Open)">
+          <a href="${SPREADSHEET_URL}" target="_blank" class="beds-topbar-sync-pill" id="bedsSheetSyncPill" title="Store Dedicated Google Spreadsheet (Click to Open: ${SPREADSHEET_ID})">
             <span class="pulse-dot"></span>
-            <span class="sync-text">Google Sheet Dual-Sync: <strong>LIVE</strong></span>
-            <span class="sheet-id-chip" style="font-family: monospace; font-size: 9.5px; opacity: 0.85;">1SyOGt6H...</span>
+            <span class="sync-text">Store DB Sync: <strong>LIVE</strong></span>
+            <span class="sheet-id-chip" style="font-family: monospace; font-size: 9.5px; opacity: 0.85;">${SPREADSHEET_ID.substring(0, 8)}...</span>
           </a>
           <button class="beds-topbar-sync-btn" onclick="BalsonsWorkspace.triggerDualSync()" type="button" title="Force Bi-Directional Dual Sync">
-            ⚡ Sync All Databases
+            ⚡ Sync Store Database
           </button>
         </div>
       `;
@@ -333,6 +340,11 @@
           await window.loadGateDashboard();
         }
 
+        // 4. Sync Store Manager if active
+        if (window.BalsonsStoreApp && typeof window.BalsonsStoreApp.refreshData === 'function') {
+          await window.BalsonsStoreApp.refreshData();
+        }
+
         // Simulating robust 500ms sync verification
         await new Promise(r => setTimeout(r, 600));
 
@@ -343,12 +355,12 @@
           pill.style.color = '#10B981';
           pill.innerHTML = `
             <span class="pulse-dot"></span>
-            <span class="sync-text">Google Sheet Dual-Sync: <strong>LIVE</strong></span>
-            <span class="sheet-id-chip" style="font-family: monospace; font-size: 9.5px; opacity: 0.85;">1SyOGt6H...</span>
+            <span class="sync-text">Store DB Sync: <strong>LIVE</strong></span>
+            <span class="sheet-id-chip" style="font-family: monospace; font-size: 9.5px; opacity: 0.85;">${SPREADSHEET_ID.substring(0, 8)}...</span>
           `;
         }
 
-        this.showToast(`✅ Dual-Sync Complete: Master Google Sheet (1SyOGt6H...) & all local registers synchronized at ${now}!`, 'success');
+        this.showToast(`✅ Store Dual-Sync Complete: Dedicated Database (${SPREADSHEET_ID.substring(0, 8)}...) & local inventory registers synchronized at ${now}!`, 'success');
       } catch (err) {
         console.error('Dual Sync Error:', err);
         this.showToast(`⚠️ Dual-Sync updated local cache with fallback at ${new Date().toLocaleTimeString()}`, 'warning');

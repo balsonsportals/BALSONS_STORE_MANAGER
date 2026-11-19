@@ -4,7 +4,8 @@
 *Project Code: `PRJ-JTRWF-SCHULER`*
 
 Live Deployment: [https://balsonsportals.github.io/BALSONS_STORE_MANAGER/](https://balsonsportals.github.io/BALSONS_STORE_MANAGER/)  
-Master Google Sheets ID: `1SyOGt6HEu6HJCufAbB2_P6BgF6pEppt28J_8cARaOP0`
+Dedicated Store Google Sheet ID: `1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ`  
+Apps Script Gateway: `https://script.google.com/macros/s/AKfycbyT6wmujgCq92wK1qUtiZLCTiajMfD8gXlmAoz1iJwDE92JStSTt0o80QX-7pRgI27u/exec`
 
 ---
 

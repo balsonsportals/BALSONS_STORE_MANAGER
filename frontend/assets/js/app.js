@@ -123,6 +123,18 @@ const BalsonsStoreApp = {
     this.vendors = [...BALSONS_STORE_DATA.vendors];
   },
 
+  refreshData: async function() {
+    this.loadData();
+    this.renderRadarKPIs();
+    this.renderInventoryTable();
+    this.renderForm11Table();
+    this.renderLoansTable();
+    this.renderQuarantineTable();
+    this.renderReceiptsTable();
+    this.renderProcurementTable();
+    console.log('🔄 BalsonsStoreApp data refreshed from dedicated store registers');
+  },
+
   saveTools: function() {
     localStorage.setItem(BALSONS_STORE_CONFIG.STORAGE_KEYS.TOOLS, JSON.stringify(this.tools));
   },

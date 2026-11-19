@@ -16,12 +16,12 @@ const BALSONS_STORE_CONFIG = {
   VERSION: '1.0.0-store-master',
   ENV: 'production',
 
-  // Master Google Sheet Database Reference
-  SPREADSHEET_ID: '1SyOGt6HEu6HJCufAbB2_P6BgF6pEppt28J_8cARaOP0',
-  SPREADSHEET_URL: 'https://docs.google.com/spreadsheets/d/1SyOGt6HEu6HJCufAbB2_P6BgF6pEppt28J_8cARaOP0/edit',
+  // Dedicated Store Master Google Sheet Database Reference
+  SPREADSHEET_ID: '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
+  SPREADSHEET_URL: 'https://docs.google.com/spreadsheets/d/1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ/edit',
 
-  // Google Apps Script Gateway Endpoint
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwgutbfm18PJPhsj_3-0C9Kt5AeaLqvGzoP8RMPab6ESzfm5SBkEPf8YslN8tJhOZJL/exec',
+  // Google Apps Script Dedicated Store Gateway Endpoint
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyT6wmujgCq92wK1qUtiZLCTiajMfD8gXlmAoz1iJwDE92JStSTt0o80QX-7pRgI27u/exec',
 
   STORAGE_KEYS: {
     TOOLS: 'balsons_store_tools_v1',
