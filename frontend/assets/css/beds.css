@@ -137,7 +137,18 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── 4. REUSABLE UI COMPONENT LIBRARY ───────────────────────────── */
 
-/* 4.1 Enterprise Brand Monogram */
+/* 4.1 Enterprise Brand Monogram & Logo Constraints */
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-wrap img {
+  height: 38px;
+  width: auto;
+  max-height: 38px;
+  object-fit: contain;
+}
 .beds-brand-monogram, .brand-monogram {
   width: 38px;
   height: 38px;
