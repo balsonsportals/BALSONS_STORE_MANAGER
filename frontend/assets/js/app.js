@@ -56,6 +56,33 @@ const BalsonsStoreApp = {
   },
 
   initAuth: function() {
+    if (window.BalsonsSAMAuth) {
+      BalsonsSAMAuth.renderGlobalSuperAdminBar('store', (newSession) => {
+        window.location.reload();
+      });
+      const samSession = BalsonsSAMAuth.getSession();
+      if (samSession) {
+        const userEl = document.getElementById('header-user-display');
+        const roleEl = document.getElementById('header-role-badge');
+        if (userEl) userEl.textContent = samSession.fullName;
+        if (roleEl) {
+          roleEl.textContent = samSession.role === 'SUPER_ADMIN' ? 'Owner / Super Admin' : samSession.roleInfo.title;
+          roleEl.className = 'role-badge role-Owner';
+        }
+        const switchBtn = document.getElementById('btn-switch-user');
+        if (switchBtn) {
+          switchBtn.addEventListener('click', () => {
+            if (samSession.role === 'SUPER_ADMIN') {
+              BalsonsSAMAuth.openGovernanceConsole('store');
+            } else {
+              BalsonsSAMAuth.openAccessMatrixModal();
+            }
+          });
+        }
+        return;
+      }
+    }
+
     const user = BalsonsStoreAuth.getUser();
     const userEl = document.getElementById('header-user-display');
     const roleEl = document.getElementById('header-role-badge');

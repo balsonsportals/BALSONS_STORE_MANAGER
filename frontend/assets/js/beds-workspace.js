@@ -1,6 +1,7 @@
 /**
  * BALSONS ENTERPRISE WORKSPACE CONTROLLER (BEDS V1.0)
- * Universal Department Switcher, Dedicated Dual-Sync Google Sheet Engine, & Mobile Responsive Navigation
+ * Universal Department Switcher, Dedicated Dual-Sync Google Sheet Engine, 
+ * & Global Super Administrator Access Governance Integration (Policy V1.0)
  * Applicable to all BALSONS operational portals (Safety, HR, Gate Entry, Store, Launcher)
  */
 
@@ -49,7 +50,8 @@
       this.injectMobileHamburgerAndDrawer();
       this.injectToastContainer();
       this.bindGlobalEvents();
-      console.log('✅ BALSONS Enterprise Workspace & Dual-Sync Engine Initialized');
+      this.updateAuthorityDisplay();
+      console.log('✅ BALSONS Enterprise Workspace, Dual-Sync Engine & Authority Governance Initialized');
     },
 
     getCurrentPortalCode: function() {
@@ -66,6 +68,79 @@
       return PORTAL_DATABASES[code] || PORTAL_DATABASES['launcher'];
     },
 
+    handleDeptClick: function(e, deptCode, targetHref) {
+      if (window.BalsonsSuperAdmin && !window.BalsonsSuperAdmin.canAccessPortal(deptCode)) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        window.BalsonsSuperAdmin.showAccessRestrictedModal(deptCode);
+        return false;
+      }
+      return true;
+    },
+
+    handleAuthorityClick: function() {
+      if (window.BalsonsSuperAdmin) {
+        if (window.BalsonsSuperAdmin.isSuperAdmin()) {
+          window.BalsonsSuperAdmin.openGovernanceModal();
+        } else {
+          window.BalsonsSuperAdmin.openRoleSwitchModal();
+        }
+      }
+    },
+
+    updateAuthorityDisplay: function() {
+      const container = document.getElementById('bedsTopbarAuthority');
+      if (!container || !window.BalsonsSuperAdmin) return;
+
+      const user = window.BalsonsSuperAdmin.getCurrentUser();
+      const isSuper = window.BalsonsSuperAdmin.isSuperAdmin();
+
+      if (isSuper) {
+        container.className = 'beds-topbar-authority superadmin';
+        container.title = 'Click to open Global Super Administrator Governance Console';
+        container.innerHTML = `
+          <span>👑</span>
+          <span><strong>SUPER ADMINISTRATOR</strong> · ALL PORTALS · ALL DATA · COMPLETE CONTROL</span>
+          <span style="font-size: 9px; background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 4px; margin-left: 2px;">GOVERNANCE ▾</span>
+        `;
+      } else if (user.role.includes('Director') || user.role.includes('Management')) {
+        container.className = 'beds-topbar-authority management';
+        container.title = 'Management Role: Assigned Portals Only';
+        container.innerHTML = `
+          <span>🏛️</span>
+          <span><strong>MANAGEMENT</strong> · ASSIGNED PORTALS</span>
+          <span style="font-size: 9px; background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 4px; margin-left: 2px;">SWITCH ▾</span>
+        `;
+      } else if (user.role.includes('Administrator')) {
+        container.className = 'beds-topbar-authority portaladmin';
+        container.title = 'Portal Administrator: Assigned Portal Authority Only';
+        container.innerHTML = `
+          <span>⚙️</span>
+          <span><strong>PORTAL ADMIN</strong> [${(user.assignedPortal || 'PORTAL').toUpperCase()}]</span>
+          <span style="font-size: 9px; background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 4px; margin-left: 2px;">SWITCH ▾</span>
+        `;
+      } else {
+        container.className = 'beds-topbar-authority employee';
+        container.title = `${user.role}: Assigned Scope Only`;
+        container.innerHTML = `
+          <span>${user.avatar || '👤'}</span>
+          <span><strong>${user.role.toUpperCase()}</strong> · ASSIGNED SCOPE</span>
+          <span style="font-size: 9px; background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 4px; margin-left: 2px;">SWITCH ▾</span>
+        `;
+      }
+
+      // Also update header user profile if it exists on page
+      const headerUserDisplay = document.getElementById('header-user-display');
+      const headerRoleBadge = document.getElementById('header-role-badge');
+      if (headerUserDisplay) headerUserDisplay.innerText = user.fullName;
+      if (headerRoleBadge) {
+        headerRoleBadge.innerText = user.role;
+        headerRoleBadge.className = 'role-badge ' + (isSuper ? 'role-SuperAdmin' : 'role-' + user.role.replace(/[^a-zA-Z]/g, ''));
+      }
+    },
+
     injectEnterpriseTopbar: function() {
       if (document.getElementById('beds-enterprise-topbar')) return;
 
@@ -78,7 +153,7 @@
         const targetHref = isRoot ? d.rootPath : d.path;
         const isActive = d.code === currentPortal;
         return `
-          <a href="${targetHref}" class="beds-dept-item ${isActive ? 'active' : ''}">
+          <a href="${targetHref}" onclick="return BalsonsWorkspace.handleDeptClick(event, '${d.code}', '${targetHref}')" class="beds-dept-item ${isActive ? 'active' : ''}">
             <span>${d.name}</span>
             ${isActive ? '<span style="font-size:10px; color:var(--beds-teal-primary); margin-left:auto;">● Active</span>' : ''}
           </a>
@@ -109,7 +184,16 @@
           </div>
         </div>
 
+        <div class="beds-topbar-center">
+          <div class="beds-topbar-authority" id="bedsTopbarAuthority" onclick="BalsonsWorkspace.handleAuthorityClick()">
+            <!-- Populated by updateAuthorityDisplay() -->
+          </div>
+        </div>
+
         <div class="beds-topbar-right">
+          <button class="beds-topbar-role-btn" onclick="window.BalsonsSuperAdmin ? window.BalsonsSuperAdmin.openRoleSwitchModal() : null" type="button" title="Switch Policy Role">
+            👤 Switch Role
+          </button>
           <a href="${spreadsheetUrl}" target="_blank" class="beds-topbar-sync-pill" id="bedsSheetSyncPill" title="${db.fullName} (Click to Open: ${db.id})">
             <span class="pulse-dot"></span>
             <span class="sync-text">${db.name} DB Sync: <strong>LIVE</strong></span>
@@ -171,6 +255,21 @@
           </div>
 
           <div class="beds-drawer-body">
+            <!-- Authority & Governance Controls in Mobile Drawer -->
+            <div>
+              <div class="beds-drawer-group-title">👑 Authority & Governance</div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button class="beds-drawer-nav-item" onclick="BalsonsWorkspace.handleAuthorityClick(); BalsonsWorkspace.closeMobileDrawer();" style="background: rgba(245, 158, 11, 0.12); color: #D97706; border-color: rgba(245, 158, 11, 0.3);">
+                  <span>👑</span>
+                  <strong>Super Admin Governance Console</strong>
+                </button>
+                <button class="beds-drawer-nav-item" onclick="window.BalsonsSuperAdmin.openRoleSwitchModal(); BalsonsWorkspace.closeMobileDrawer();" style="background: rgba(0, 151, 178, 0.08); color: var(--beds-teal-primary); border-color: rgba(0, 151, 178, 0.25);">
+                  <span>👤</span>
+                  <strong>Switch Authority Role (6 Tiers)</strong>
+                </button>
+              </div>
+            </div>
+
             <!-- Quick Actions -->
             <div>
               <div class="beds-drawer-group-title">⚡ Quick Access</div>
@@ -223,7 +322,7 @@
         const targetHref = isRoot ? d.rootPath : d.path;
         const isActive = d.code === currentPortal;
         return `
-          <a href="${targetHref}" class="beds-drawer-nav-item ${isActive ? 'active' : ''}">
+          <a href="${targetHref}" onclick="return BalsonsWorkspace.handleDeptClick(event, '${d.code}', '${targetHref}')" class="beds-drawer-nav-item ${isActive ? 'active' : ''}">
             <span>${d.name}</span>
           </a>
         `;

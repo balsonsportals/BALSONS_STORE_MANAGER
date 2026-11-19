@@ -1140,3 +1140,84 @@ table.beds-data-table tr:hover td, table.data-table tr:hover td {
     font-size: 11px !important;
   }
 }
+
+
+/* ─── 13. GLOBAL SUPER ADMINISTRATOR & AUTHORITY ACCESS STYLES (POLICY V1.0) ─── */
+.beds-topbar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.beds-topbar-authority {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  padding: 3px 10px;
+  border-radius: 16px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.beds-topbar-authority:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.beds-topbar-authority.superadmin {
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid #F59E0B;
+  color: #FBBF24;
+}
+.beds-topbar-authority.management {
+  background: rgba(0, 151, 178, 0.18);
+  border: 1px solid var(--beds-teal-primary);
+  color: #00D2F4;
+}
+.beds-topbar-authority.portaladmin {
+  background: rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  color: #E2E8F0;
+}
+.beds-topbar-authority.employee {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #CBD5E1;
+}
+.beds-topbar-role-btn {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all var(--beds-transition);
+}
+.beds-topbar-role-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+.beds-gov-tab {
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--beds-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.beds-gov-tab:hover {
+  color: var(--beds-text-primary);
+}
+.beds-gov-tab.active {
+  color: var(--beds-teal-primary);
+  border-bottom-color: var(--beds-teal-primary);
+  font-weight: 800;
+}
