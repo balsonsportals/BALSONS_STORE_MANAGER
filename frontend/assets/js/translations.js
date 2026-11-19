@@ -37,6 +37,15 @@ const BalsonsStoreI18n = {
     }
   },
 
+  init: function() {
+    const saved = localStorage.getItem('balsons_store_lang') || 'en';
+    this.setLang(saved);
+  },
+
+  setLanguage: function(lang) {
+    this.setLang(lang);
+  },
+
   setLang: function(lang) {
     if (this.translations[lang]) {
       this.currentLang = lang;
