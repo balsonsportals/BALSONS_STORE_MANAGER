@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BALSONS STORE MANAGER • Heavy Rigging & Inventory System</title>
+  <link rel="icon" type="image/png" href="assets/images/balsons-logo.png">
+  <link rel="stylesheet" href="assets/css/beds.css">
+  <style>
+    /* Store Manager Specific Enhancements */
+    .store-filter-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 10px 0;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 12px;
+    }
+    .store-filter-bar::-webkit-scrollbar { display: none; }
+    .tool-filter-btn {
+      padding: 6px 12px;
+      border-radius: var(--beds-radius-md);
+      background: var(--beds-bg-panel);
+      border: 1px solid var(--beds-border);
+      color: var(--beds-text-secondary);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--beds-transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .tool-filter-btn:hover {
+      background: var(--beds-bg-panel-hover);
+      color: var(--beds-text-primary);
+    }
+    .tool-filter-btn.active {
+      background: var(--beds-teal-primary);
+      color: #FFFFFF;
+      border-color: var(--beds-teal-primary);
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 8mm 10mm;
+      }
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      .beds-enterprise-topbar, header, nav, .beds-mobile-pill-bar, .quick-action-bar, .store-filter-bar, .beds-toast-container, .beds-btn {
+        display: none !important;
+      }
+      #view-rgp, #view-qr-tags {
+        display: block !important;
+      }
+      .beds-view-panel {
+        display: none !important;
+      }
+      .beds-view-panel.active {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Enterprise Header -->
+  <header>
+    <div class="brand-wrap">
+      <img src="assets/images/balsons-logo.png" alt="BALSONS Logo">
+      <div class="brand-titles">
+        <h1 data-i18n="portal_title">BALSONS STORE MANAGER</h1>
+        <p data-i18n="portal_sub">JTRWF Khordha Project · Store & Heavy Rigging Inventory System</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <!-- Bilingual Selector -->
+      <div class="lang-switcher">
+        <button class="lang-pill active" data-lang="en">EN</button>
+        <button class="lang-pill" data-lang="hi">हिन्दी</button>
+      </div>
+
+      <!-- User Profile Badge -->
+      <div class="meta-badge" style="display: flex; align-items: center; gap: 6px;">
+        <span>👤 <strong id="header-user-display">Gagan Bihari Das</strong></span>
+        <span class="role-badge role-StoreManager" id="header-role-badge">Store Manager</span>
+      </div>
+
+      <!-- Switch Role & Theme Toggle -->
+      <button class="beds-btn beds-btn-sm beds-btn-secondary" id="btn-switch-user">Switch Role</button>
+      <button class="beds-btn beds-btn-sm beds-btn-secondary" id="btn-toggle-theme">🌙 Dark</button>
+    </div>
+  </header>
+
+  <!-- Smart Grouped Enterprise Navigation Bar (Locked, No Scrollbar, Dropdown Menus) -->
+  <nav id="master-nav-tabs">
+    <!-- Group 1: Store Command Radar (Direct) -->
+    <button class="beds-nav-tab active" data-target="view-radar" data-i18n="nav_radar">
+      📊 Store Radar
+    </button>
+
+    <!-- Group 2: Inventory & Tools Master Dropdown -->
+    <div class="beds-nav-dropdown">
+      <button class="beds-nav-tab beds-dropdown-toggle" id="toggle-nav-inventory" type="button">
+        📦 <span>Inventory & Tools</span> <span class="beds-caret">▾</span>
+      </button>
+      <div class="beds-dropdown-menu">
+        <a class="beds-dropdown-item" data-target="view-inventory">
+          <span class="item-icon">🔧</span>
+          <div class="item-text">
+            <strong>264 Tool Inventory Master</strong>
+            <small>Locked asset registry across all 8 rigging sections</small>
+          </div>
+        </a>
+        <a class="beds-dropdown-item" data-target="view-form11">
+          <span class="item-icon">📜</span>
+          <div class="item-text">
+            <strong>Statutory Form 11 Register</strong>
+            <small>Factories Act lifting gear proof test certificates</small>
+          </div>
+        </a>
+        <a class="beds-dropdown-item" data-target="view-quarantine">
+          <span class="item-icon">⛔</span>
+          <div class="item-text">
+            <strong>Damaged & Quarantine Desk</strong>
+            <small>Red tag notices, defects & scrap disposal</small>
+          </div>
+        </a>
+        <a class="beds-dropdown-item" data-target="view-qr-tags">
+          <span class="item-icon">🏷️</span>
+          <div class="item-text">
+            <strong>QR Asset Tag Studio</strong>
+            <small>Printable A4 asset tags with verification QR</small>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Group 3: Issue, Return & Gate Pass Dropdown -->
+    <div class="beds-nav-dropdown">
+      <button class="beds-nav-tab beds-dropdown-toggle" id="toggle-nav-loans" type="button">
+        🔄 <span>Issue & Gate Pass</span> <span class="beds-caret">▾</span>
+      </button>
+      <div class="beds-dropdown-menu">
+        <a class="beds-dropdown-item" data-target="view-loans">
+          <span class="item-icon">📋</span>
+          <div class="item-text">
+            <strong>Tool Loans & Active Issue</strong>
+            <small>Site tool loans linked to inducted personnel</small>
+          </div>
+        </a>
+        <a class="beds-dropdown-item" data-target="view-receipts">
+          <span class="item-icon">📥</span>
+          <div class="item-text">
+            <strong>Material Inward (GRN)</strong>
+            <small>Goods receipt notes, inspections & acceptance</small>
+          </div>
+        </a>
+        <a class="beds-dropdown-item" data-target="view-rgp">
+          <span class="item-icon">🚛</span>
+          <div class="item-text">
+            <strong>RGP / NRGP Gate Pass Studio</strong>
+            <small>Printable delivery challans & material gate passes</small>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Group 4: Commercial & Procurement Dropdown -->
+    <div class="beds-nav-dropdown">
+      <button class="beds-nav-tab beds-dropdown-toggle" id="toggle-nav-procurement" type="button">
+        💼 <span>Procurement</span> <span class="beds-caret">▾</span>
+      </button>
+      <div class="beds-dropdown-menu">
+        <a class="beds-dropdown-item" data-target="view-procurement">
+          <span class="item-icon">📑</span>
+          <div class="item-text">
+            <strong>Purchase Requisitions (PR)</strong>
+            <small>Demands, quotation comparisons & approvals</small>
+          </div>
+        </a>
+        <a class="beds-dropdown-item" data-target="view-vendors">
+          <span class="item-icon">🏢</span>
+          <div class="item-text">
+            <strong>Approved Vendor Master</strong>
+            <small>Suppliers, OEM manufacturers & contact details</small>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Group 5: 360 Workforce Dossier (Direct) -->
+    <button class="beds-nav-tab" data-target="view-dossier-360" data-i18n="nav_dossier">
+      📄 360° Workforce Dossier
+    </button>
+  </nav>
+
+  <!-- Mobile Swipeable Quick-Pill Bar (Smartphone & Tablet Optimized) -->
+  <div class="beds-mobile-pill-bar">
+    <button class="beds-btn beds-btn-sm beds-btn-primary" onclick="BalsonsStoreApp.switchView('view-radar')">📊 Radar</button>
+    <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.switchView('view-inventory')">🔧 264 Tools</button>
+    <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.switchView('view-form11')">📜 Form 11</button>
+    <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.switchView('view-loans')">📋 Loans</button>
+    <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.switchView('view-quarantine')">⛔ Quarantine</button>
+    <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.switchView('view-rgp')">🚛 RGP Pass</button>
+    <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.switchView('view-dossier-360')">📄 360° Dossier</button>
+  </div>
+
+  <!-- Main View Area -->
+  <main>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 01: STORE COMMAND RADAR                              -->
+    <!-- ======================================================== -->
+    <div id="view-radar" class="beds-view-panel active">
+      <!-- Active Store Alert Banner -->
+      <div class="safety-alert-banner" style="background: rgba(0, 151, 178, 0.08); border-left: 4px solid var(--beds-teal-primary); color: var(--beds-charcoal-heading);">
+        <span style="font-size: 16px;">📦</span>
+        <span><strong>STORE OPERATIONS ADVISORY:</strong> Heavy rigging gear for Schuler 10,000T line mobilized at AREA-01. Verify statutory Form 11 proof testing before issuing heavy slings or 200T jacks.</span>
+      </div>
+
+      <!-- KPI Radar Grid -->
+      <div class="radar-grid">
+        <div class="radar-card info">
+          <span class="radar-label">Total Rigging & Store Inventory</span>
+          <span class="radar-value" id="kpi-total-tools">264</span>
+          <small style="font-size: 11px; color: var(--beds-text-secondary); margin-top: 4px; display: block;">Across 8 Operational Sections</small>
+        </div>
+        <div class="radar-card success">
+          <span class="radar-label">Available in Store Bins</span>
+          <span class="radar-value" id="kpi-avail-tools" style="color: #059669;">242</span>
+          <small style="font-size: 11px; color: var(--beds-text-secondary); margin-top: 4px; display: block;">Ready for Immediate Site Loan</small>
+        </div>
+        <div class="radar-card info">
+          <span class="radar-label">Active Site Loans (Issued)</span>
+          <span class="radar-value" id="kpi-issued-tools" style="color: var(--beds-teal-primary);">16</span>
+          <small style="font-size: 11px; color: var(--beds-text-secondary); margin-top: 4px; display: block;">Tracked to Inducted Personnel</small>
+        </div>
+        <div class="radar-card warning">
+          <span class="radar-label">Statutory Form 11 Due &lt; 30 Days</span>
+          <span class="radar-value" id="kpi-form11-due" style="color: #D97706;">5</span>
+          <small style="font-size: 11px; color: var(--beds-text-secondary); margin-top: 4px; display: block;">Requires Competent Person Proof Test</small>
+        </div>
+        <div class="radar-card critical">
+          <span class="radar-label">Quarantined / Defective Tools</span>
+          <span class="radar-value" id="kpi-quar-tools" style="color: #DC2626;">2</span>
+          <small style="font-size: 11px; color: var(--beds-text-secondary); margin-top: 4px; display: block;">Red Tag Applied · Issue Blocked</small>
+        </div>
+        <div class="radar-card warning">
+          <span class="radar-label">Under Workshop Repair</span>
+          <span class="radar-value" id="kpi-repair-tools" style="color: #D97706;">4</span>
+          <small style="font-size: 11px; color: var(--beds-text-secondary); margin-top: 4px; display: block;">Overhaul / Recertification</small>
+        </div>
+      </div>
+
+      <!-- Quick Action Operations Bar -->
+      <div style="background: var(--beds-bg-panel); border: 1px solid var(--beds-border); border-radius: var(--beds-radius-md); padding: 16px 20px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <strong style="font-size: 14px; color: var(--beds-charcoal-heading);">⚡ Quick Store Workflows</strong>
+          <p style="font-size: 12px; color: var(--beds-text-secondary); margin-top: 2px;">Standard operational issue, receipt, and gate pass processing</p>
+        </div>
+        <div class="action-btn-group" style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="beds-btn beds-btn-primary" onclick="BalsonsStoreApp.switchView('view-inventory')">📦 Issue Rigging Gear</button>
+          <button class="beds-btn beds-btn-secondary" onclick="BalsonsStoreApp.switchView('view-receipts')">📥 Log Inward Receipt (GRN)</button>
+          <button class="beds-btn beds-btn-secondary" onclick="BalsonsStoreApp.switchView('view-rgp')">🚛 Issue Material Gate Pass (RGP)</button>
+          <button class="beds-btn beds-btn-secondary" onclick="BalsonsStoreApp.switchView('view-qr-tags')">🏷️ Print QR Tags</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 02: 264 TOOL INVENTORY MASTER                        -->
+    <!-- ======================================================== -->
+    <div id="view-inventory" class="beds-view-panel">
+      <div class="quick-action-bar">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            🔧 264 RIGGING TOOLS & STORE INVENTORY MASTER
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Complete physical asset baseline across all 8 engineering sections
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="meta-badge" id="tool-count-badge" style="font-weight: 700;">Showing 264 Tools</span>
+          <button class="beds-btn beds-btn-primary" onclick="window.print()">🖨️ Export / Print</button>
+        </div>
+      </div>
+
+      <!-- Section Filter Pills -->
+      <div class="store-filter-bar">
+        <button class="tool-filter-btn active" data-sec="ALL" onclick="BalsonsStoreApp.filterToolsByCategory('ALL', this)">ALL SECTIONS (264)</button>
+        <button class="tool-filter-btn" data-sec="LF" onclick="BalsonsStoreApp.filterToolsByCategory('LF', this)">🏗️ LF: Lifting Equipment (41)</button>
+        <button class="tool-filter-btn" data-sec="PT" onclick="BalsonsStoreApp.filterToolsByCategory('PT', this)">⚡ PT: Power Tools (25)</button>
+        <button class="tool-filter-btn" data-sec="MT" onclick="BalsonsStoreApp.filterToolsByCategory('MT', this)">📏 MT: Measuring (13)</button>
+        <button class="tool-filter-btn" data-sec="HF" onclick="BalsonsStoreApp.filterToolsByCategory('HF', this)">🔧 HF: Hand Tools (155)</button>
+        <button class="tool-filter-btn" data-sec="CC" onclick="BalsonsStoreApp.filterToolsByCategory('CC', this)">🛢️ CC: Chemicals (6)</button>
+        <button class="tool-filter-btn" data-sec="ELE" onclick="BalsonsStoreApp.filterToolsByCategory('ELE', this)">🔌 ELE: Electrical (11)</button>
+        <button class="tool-filter-btn" data-sec="SF" onclick="BalsonsStoreApp.filterToolsByCategory('SF', this)">🦺 SF: Safety (9)</button>
+        <button class="tool-filter-btn" data-sec="HT" onclick="BalsonsStoreApp.filterToolsByCategory('HT', this)">⚙️ HT: Heavy Tooling (4)</button>
+      </div>
+
+      <!-- Search Input -->
+      <div style="margin-bottom: 14px;">
+        <input type="text" id="tool-search-input" class="beds-input" placeholder="🔍 Search tools by Tag ID, description, make, model or capacity..." oninput="BalsonsStoreApp.searchTools(this.value)">
+      </div>
+
+      <div class="beds-table-wrapper">
+        <table class="beds-data-table">
+          <thead>
+            <tr>
+              <th>Physical Tag ID</th>
+              <th>Tool Description & Model</th>
+              <th>Section</th>
+              <th>SWL / Capacity</th>
+              <th>Store Bin</th>
+              <th>Status</th>
+              <th>Current Custody</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="tools-table-body">
+            <!-- Populated via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 03: STATUTORY FORM 11 LIFTING REGISTER               -->
+    <!-- ======================================================== -->
+    <div id="view-form11" class="beds-view-panel">
+      <div class="quick-action-bar" style="border-left: 4px solid #059669;">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            📜 STATUTORY FORM 11 LIFTING TACKLES & GEAR REGISTER
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Factories Act 1948 · Odisha Factories Rules 1950 · Mandatory Periodic Competent Person Proof Testing
+          </div>
+        </div>
+        <button class="beds-btn beds-btn-primary" onclick="window.print()">🖨️ Print Form 11 Register</button>
+      </div>
+
+      <div class="beds-table-wrapper">
+        <table class="beds-data-table">
+          <thead>
+            <tr>
+              <th>Asset Tag ID</th>
+              <th>Lifting Gear Description</th>
+              <th>Safe Working Load (SWL)</th>
+              <th>Form 11 Cert No.</th>
+              <th>Last Proof Test</th>
+              <th>Next Due Date</th>
+              <th>Compliance State</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="form11-table-body">
+            <!-- Populated via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 04: TOOL LOANS & ISSUE DESK                         -->
+    <!-- ======================================================== -->
+    <div id="view-loans" class="beds-view-panel">
+      <div class="quick-action-bar">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            📋 TOOL LOANS & ACTIVE SITE CUSTODY REGISTER
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Real-time material custody tracked to inducted personnel and plant work areas
+          </div>
+        </div>
+        <button class="beds-btn beds-btn-primary" onclick="BalsonsStoreApp.switchView('view-inventory')">+ Issue Tool from Store</button>
+      </div>
+
+      <div class="beds-table-wrapper">
+        <table class="beds-data-table">
+          <thead>
+            <tr>
+              <th>Loan Reference</th>
+              <th>Asset Tag & Tool</th>
+              <th>Recipient Personnel</th>
+              <th>Target Work Area</th>
+              <th>Issue Date/Time</th>
+              <th>Expected Return</th>
+              <th>Loan Status</th>
+              <th style="text-align: right;">Return Action</th>
+            </tr>
+          </thead>
+          <tbody id="transactions-table-body">
+            <!-- Populated via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 05: MATERIAL INWARD (GRN) REGISTER                   -->
+    <!-- ======================================================== -->
+    <div id="view-receipts" class="beds-view-panel">
+      <div class="quick-action-bar">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            📥 MATERIAL INWARD & GOODS RECEIPT NOTE (GRN) REGISTER
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Vendor deliveries, physical verification, Quality Acceptance & Stock Entry
+          </div>
+        </div>
+        <button class="beds-btn beds-btn-primary" onclick="alert('GRN Inward form: Enter PO number, delivery challan, and physical goods checklist.')">+ New GRN Inward</button>
+      </div>
+
+      <div class="beds-table-wrapper">
+        <table class="beds-data-table">
+          <thead>
+            <tr>
+              <th>GRN Number</th>
+              <th>Supplier / Vendor</th>
+              <th>PO / Challan Ref</th>
+              <th>Delivered Item Description</th>
+              <th>Received Qty</th>
+              <th>Accepted / Rejected</th>
+              <th>Inspection Status</th>
+              <th>Inspected By</th>
+            </tr>
+          </thead>
+          <tbody id="receipts-table-body">
+            <!-- Populated via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 06: DAMAGED & QUARANTINE DESK                       -->
+    <!-- ======================================================== -->
+    <div id="view-quarantine" class="beds-view-panel">
+      <div class="quick-action-bar" style="border-left: 4px solid #DC2626;">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            ⛔ DAMAGED EQUIPMENT & SAFETY QUARANTINE DESK
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Physical Red Tag applied · Strictly locked from site issuance · Scrap or repair workflow
+          </div>
+        </div>
+        <button class="beds-btn beds-btn-secondary" onclick="alert('Quarantine cage inventory verified. 2 items under hold.')">🔒 Verify Quarantine Cage</button>
+      </div>
+
+      <div class="beds-table-wrapper">
+        <table class="beds-data-table">
+          <thead>
+            <tr>
+              <th>Red Tag ID</th>
+              <th>Tool Asset Ref</th>
+              <th>Date Tagged</th>
+              <th>Defect Category</th>
+              <th>Defect Observation</th>
+              <th>Action Taken</th>
+              <th>Quarantine Status</th>
+            </tr>
+          </thead>
+          <tbody id="quarantine-table-body">
+            <!-- Populated via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 07: RGP / NRGP GATE PASS STUDIO                     -->
+    <!-- ======================================================== -->
+    <div id="view-rgp" class="beds-view-panel">
+      <div class="quick-action-bar" style="border-left: 4px solid var(--beds-teal-primary); background: var(--beds-bg-panel); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            🚛 RETURNABLE & NON-RETURNABLE GATE PASS (RGP/NRGP) STUDIO
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Printable A4 Delivery Challans & Gate Authorisation for Tools, Equipment & Returnable Assets
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="beds-btn beds-btn-primary" onclick="BalsonsStoreApp.generateRgpChallan()">⚡ Generate Challan</button>
+          <button class="beds-btn beds-btn-secondary" onclick="window.print()">🖨️ Print Challan (A4)</button>
+        </div>
+      </div>
+
+      <!-- Generator Inputs Panel -->
+      <div style="background: var(--beds-bg-panel); border: 1px solid var(--beds-border); border-radius: var(--beds-radius-md); padding: 18px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 14px;">
+          <div>
+            <label class="beds-label" style="font-size: 12px; font-weight: 700;">Gate Pass Classification:</label>
+            <select id="rgp-type" class="beds-select">
+              <option value="RGP">RGP · Returnable Gate Pass (Tools for Calibration / Testing)</option>
+              <option value="NRGP">NRGP · Non-Returnable Gate Pass (Scrap / Consumables / Samples)</option>
+            </select>
+          </div>
+          <div>
+            <label class="beds-label" style="font-size: 12px; font-weight: 700;">Vehicle / Carrier No:</label>
+            <input type="text" id="rgp-vehicle" class="beds-input" value="OD-02-AK-4412 (Mahindra Bolero Pickup)">
+          </div>
+          <div>
+            <label class="beds-label" style="font-size: 12px; font-weight: 700;">Destination Agency / Workshop:</label>
+            <input type="text" id="rgp-dest" class="beds-input" value="Enerpac Service & Calibration Center, Bhubaneswar">
+          </div>
+          <div>
+            <label class="beds-label" style="font-size: 12px; font-weight: 700;">Expected Return Date:</label>
+            <input type="date" id="rgp-return-date" class="beds-input" value="2026-11-28">
+          </div>
+        </div>
+
+        <div>
+          <label class="beds-label" style="font-size: 12px; font-weight: 700;">Reason & Purpose of Movement:</label>
+          <input type="text" id="rgp-purpose" class="beds-input" value="Six-monthly proof load testing and statutory calibration recertification" style="margin-bottom: 10px;">
+        </div>
+
+        <div>
+          <label class="beds-label" style="font-size: 12px; font-weight: 700;">Materials & Equipment Description (List Items):</label>
+          <textarea id="rgp-items" class="beds-input" rows="3" style="font-family: monospace; font-size: 12px;">1. BAL-LF-HYJ-004 (Hydraulic Jack 500T Heavy Press Rigging - Ser# HCG-5006) · 1 No.
+2. BAL-LF-SHK-010 (Bow Shackle Grade 80 Alloy 85T - Ser# G4163-85) · 1 No.
+3. BAL-MT-TQW-002 (Heavy Torque Wrench 1-Inch Drive 700-1500Nm) · 1 No.</textarea>
+        </div>
+      </div>
+
+      <!-- Printable A4 Sheet Output -->
+      <div id="rgp-printable-sheet">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 08: PROCUREMENT & PURCHASE REQUISITIONS (PR)         -->
+    <!-- ======================================================== -->
+    <div id="view-procurement" class="beds-view-panel">
+      <div class="quick-action-bar">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            📑 PROCUREMENT & PURCHASE REQUISITION (PR) REGISTER
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Material demands, commercial quotation evaluation & Purchase Orders
+          </div>
+        </div>
+        <button class="beds-btn beds-btn-primary" onclick="alert('Create PR: Enter item details, required by date, and justification.')">+ Raise Purchase Requisition</button>
+      </div>
+
+      <div class="beds-table-wrapper">
+        <table class="beds-data-table">
+          <thead>
+            <tr>
+              <th>Requisition ID</th>
+              <th>Material Description</th>
+              <th>Category</th>
+              <th>Required Qty</th>
+              <th>Requested By</th>
+              <th>Required Date</th>
+              <th>Estimated Cost</th>
+              <th>Approval Status</th>
+            </tr>
+          </thead>
+          <tbody id="procurement-table-body">
+            <!-- Populated via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 09: VENDOR DIRECTORY                                 -->
+    <!-- ======================================================== -->
+    <div id="view-vendors" class="beds-view-panel">
+      <div class="quick-action-bar">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            🏢 APPROVED OEM VENDOR & SUPPLIER MASTER
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Authorized lifting gear OEMs, consumables suppliers & calibration agencies
+          </div>
+        </div>
+        <button class="beds-btn beds-btn-primary" onclick="alert('Add Vendor: Enter vendor name, contact person, GST, and product line.')">+ Register Vendor</button>
+      </div>
+
+      <div class="beds-table-wrapper">
+        <table class="beds-data-table">
+          <thead>
+            <tr>
+              <th>Vendor ID</th>
+              <th>Company Name</th>
+              <th>Contact Person & Details</th>
+              <th>GST Identification</th>
+              <th>Supply Category</th>
+              <th>Vendor Rating</th>
+            </tr>
+          </thead>
+          <tbody id="vendors-table-body">
+            <!-- Populated via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 10: QR ASSET TAG STUDIO                             -->
+    <!-- ======================================================== -->
+    <div id="view-qr-tags" class="beds-view-panel">
+      <div class="quick-action-bar" style="border-left: 4px solid var(--beds-teal-primary); background: var(--beds-bg-panel); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            🏷️ QR ASSET TAG GENERATOR STUDIO (A4 PRINTABLE SHEETS)
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Official BALSONS physical tool tags with serial QR code, SWL capacity & inspection due dates
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <select class="beds-select" onchange="BalsonsStoreApp.renderQrTagStudio(this.value)">
+            <option value="LF">LF: Lifting Equipment (Hydraulic Jacks, Slings, Shackles)</option>
+            <option value="PT">PT: Power Tools (Magnetic Drills, Grinders, Impact Wrenches)</option>
+            <option value="MT">MT: Measuring Tools (Torque Wrenches, Indicators)</option>
+            <option value="SF">SF: Safety Gear (Harnesses, Fall Arresters)</option>
+            <option value="HT">HT: Heavy Tooling (Power Packs, Pullers)</option>
+          </select>
+          <button class="beds-btn beds-btn-primary" onclick="BalsonsStoreApp.printQrTagSheet()">🖨️ Print A4 Tag Sheet</button>
+        </div>
+      </div>
+
+      <div id="qr-sheet-container" style="max-width: 900px; margin: 0 auto; box-shadow: 0 4px 18px rgba(0,0,0,0.1); border-radius: 8px;">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 11: 360° WORKFORCE DOSSIER                           -->
+    <!-- ======================================================== -->
+    <div id="view-dossier-360" class="beds-view-panel">
+      <div class="quick-action-bar" style="border-left: 4px solid #0097B2; background: var(--beds-bg-panel); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+        <div>
+          <div style="font-size: 14.5px; font-weight: 800; color: var(--beds-charcoal-heading);">
+            📄 360° WORKFORCE & PERSONNEL TOOL CUSTODY DOSSIER
+          </div>
+          <div style="font-size: 11.5px; color: var(--beds-text-secondary);">
+            Cross-Portal Record: BALSONS Store (Tool Loans & Tackles) ↔ HR (KYC & Wages) ↔ Safety (Induction) ↔ Gate Entry
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <select id="store-dossier-page-select" class="beds-select" style="font-size: 12px; padding: 6px 10px; font-weight: 700;" onchange="BalsonsStoreApp.render360DossierPage(this.value)">
+            <!-- Options populated dynamically -->
+          </select>
+          <button class="beds-btn beds-btn-primary" onclick="window.print()">🖨️ Print Full Dossier (A4)</button>
+        </div>
+      </div>
+      <div id="store-dossier-page-container">
+        <!-- Rendered dynamically via Balsons360Dossier -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: Issue Tool to Personnel -->
+  <div class="beds-modal-overlay" id="modal-issue-tool">
+    <div class="beds-modal-dialog" style="max-width: 540px;">
+      <div class="beds-modal-header">
+        <h3 class="beds-modal-title">Issue Tool / Gear to Site Personnel</h3>
+        <button class="beds-modal-close" onclick="document.getElementById('modal-issue-tool').classList.remove('active')">&times;</button>
+      </div>
+      <form onsubmit="BalsonsStoreApp.submitToolIssue(event)">
+        <div class="beds-modal-body">
+          <div style="margin-bottom: 12px;">
+            <label class="beds-label" style="font-size: 12px; font-weight: 700;">Tool Asset Tag ID:</label>
+            <input type="text" id="issue-tool-id" class="beds-input" readonly style="font-family: monospace; font-weight: 800; color: var(--beds-teal-primary); background: var(--beds-bg-page);">
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label class="beds-label" style="font-size: 12px; font-weight: 700;">Tool Description:</label>
+            <input type="text" id="issue-tool-desc" class="beds-input" readonly style="background: var(--beds-bg-page);">
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label class="beds-label" style="font-size: 12px; font-weight: 700;">Issue to Authorized Personnel (Inducted & Form 31 Fit):</label>
+            <select id="issue-emp-select" class="beds-select" required>
+              <option value="EMP-2026-0001">Ramesh Kumar - Senior Rigger Lead (EMP-2026-0001)</option>
+              <option value="EMP-2026-0002">Suresh Sharma - Welder 6G (EMP-2026-0002)</option>
+              <option value="EMP-2026-0003">Manoj Patra - Scaffolder / Fitter (EMP-2026-0003)</option>
+              <option value="EMP-2026-0004">Bikram Jena - Electrical Tech (EMP-2026-0004)</option>
+              <option value="EMP-2026-0005">Rajesh Mohanty - Hydraulic Specialist (EMP-2026-0005)</option>
+              <option value="EMP-2026-0006">Alok Verma - Certified Rigger (EMP-2026-0006)</option>
+              <option value="EMP-2026-0008">Subhash Rao - 150T Crane Operator (EMP-2026-0008)</option>
+            </select>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div>
+              <label class="beds-label" style="font-size: 12px; font-weight: 700;">Target Work Area:</label>
+              <select id="issue-work-area" class="beds-select">
+                <option value="AREA-01 AXLE FORGING LINE">AREA-01 AXLE FORGING LINE</option>
+                <option value="AREA-02 WHEEL FORGING LINE">AREA-02 WHEEL FORGING LINE</option>
+                <option value="AREA-03 MACHINE SHOP">AREA-03 MACHINE SHOP</option>
+                <option value="AREA-04 DIE SHOP">AREA-04 DIE SHOP</option>
+              </select>
+            </div>
+            <div>
+              <label class="beds-label" style="font-size: 12px; font-weight: 700;">Expected Return Date:</label>
+              <input type="datetime-local" id="issue-return-date" class="beds-input" value="2026-11-20T18:00">
+            </div>
+          </div>
+          <div>
+            <label class="beds-label" style="font-size: 12px; font-weight: 700;">Task Purpose / Operation:</label>
+            <input type="text" id="issue-purpose" class="beds-input" value="Heavy Press Bed Alignment & Hydraulic Jacking" required>
+          </div>
+        </div>
+        <div class="beds-modal-footer">
+          <button type="button" class="beds-btn beds-btn-secondary" onclick="document.getElementById('modal-issue-tool').classList.remove('active')">Cancel</button>
+          <button type="submit" class="beds-btn beds-btn-primary">✓ Confirm Issue & Log Custody</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/translations.js"></script>
+  <script src="assets/js/tool-data.js"></script>
+  <script src="assets/js/dossier-360.js"></script>
+  <script src="assets/js/beds-workspace.js"></script>
+  <script src="assets/js/qr-generator.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
