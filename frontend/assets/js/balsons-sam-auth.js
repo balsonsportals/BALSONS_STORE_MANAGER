@@ -752,63 +752,19 @@
     }
 
     renderGlobalSuperAdminBar(currentPortalId = "launcher", onSessionChanged = null) {
-      this.injectStyles();
+      // OWNER DIRECTIVE: Suppress simulator topbar & policy ribbon on all portal and user screens.
+      // Policy notice is strictly preserved on the Admin Login Screen only.
       const existing = document.getElementById("sam-global-topbar");
       if (existing) existing.remove();
-
-      const session = this.getSession();
-      const users = this.getUsers();
-
-      const bar = document.createElement("div");
-      bar.id = "sam-global-topbar";
-      bar.className = "sam-gov-bar";
-
-      bar.innerHTML = `
-        <div class="sam-gov-policy">
-          <span class="sam-gov-shield">🛡️ GLOBAL SUPER ADMIN POLICY V1.0</span>
-          <span class="sam-gov-rule-text">${POLICY.CORE_RULE}</span>
-        </div>
-
-        <div class="sam-gov-center">
-          <span class="sam-switcher-label">Role Simulator:</span>
-          <button class="sam-pill-btn ${session.role === 'SUPER_ADMIN' ? 'active' : ''}" onclick="BalsonsSAMAuth.quickSwitch('superadmin')">
-            👑 Super Admin
-          </button>
-          <button class="sam-pill-btn ${session.role === 'MANAGEMENT' ? 'active' : ''}" onclick="BalsonsSAMAuth.quickSwitch('director.management')">
-            👔 Director
-          </button>
-          <button class="sam-pill-btn ${session.role === 'PORTAL_ADMIN' ? 'active' : ''}" onclick="BalsonsSAMAuth.quickSwitch('${currentPortalId === 'safety' ? 'safety.admin' : currentPortalId === 'store' ? 'store.admin' : currentPortalId === 'hr_payroll' ? 'hr.admin' : 'gate.admin'}')">
-            🏢 Portal Admin
-          </button>
-          <button class="sam-pill-btn ${session.role === 'HOD' ? 'active' : ''}" onclick="BalsonsSAMAuth.quickSwitch('hod.lifting')">
-            👷 HOD
-          </button>
-          <button class="sam-pill-btn ${session.role === 'SUPERVISOR' ? 'active' : ''}" onclick="BalsonsSAMAuth.quickSwitch('sup.bay3')">
-            📋 Supervisor
-          </button>
-          <button class="sam-pill-btn ${session.role === 'EMPLOYEE' ? 'active' : ''}" onclick="BalsonsSAMAuth.quickSwitch('emp.ramesh')">
-            👤 Employee
-          </button>
-        </div>
-
-        <div class="sam-gov-user">
-          <div class="sam-user-tag">
-            <span>👤 <strong>${session.fullName.split(' ')[0]}</strong></span>
-            <span class="sam-user-role-badge ${ROLES[session.role]?.badgeClass || 'badge-employee'}">${session.roleInfo.title}</span>
-          </div>
-          ${session.role === 'SUPER_ADMIN' ? `
-            <button class="sam-admin-console-btn" onclick="BalsonsSAMAuth.openGovernanceConsole('${currentPortalId}')">
-              ⚙️ Governance Console
-            </button>
-          ` : `
-            <button class="sam-pill-btn" onclick="BalsonsSAMAuth.openAccessMatrixModal()" title="View Access Authority Matrix">
-              ℹ️ Authority Matrix
-            </button>
-          `}
-        </div>
-      `;
-
-      document.body.insertBefore(bar, document.body.firstChild);
+      const existingBeds = document.getElementById("beds-enterprise-topbar");
+      if (existingBeds) existingBeds.remove();
+      // Enforce access permission for this portal
+      this.enforceAccess(currentPortalId);
+      if (typeof onSessionChanged === 'function') {
+        this._sessionChangeCallback = onSessionChanged;
+      }
+      return;
+      /* Inactive DOM injection */
 
       // Enforce access permission for this portal
       this.enforceAccess(currentPortalId);
