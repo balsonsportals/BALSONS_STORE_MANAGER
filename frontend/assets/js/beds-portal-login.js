@@ -119,13 +119,14 @@
           <!-- LEFT: Realistic Portal-Specific Photograph & Badges -->
           <div class="beds-login-left">
             <img src="${cfg.image}" alt="${cfg.title}" class="beds-login-left-img" onerror="this.style.display='none'">
+            ${(this.currentPortal === 'launcher' || this.currentPortal === 'operations' || this.currentPortal === 'purchase' || this.currentPortal === 'reports') ? `
             <div class="beds-login-left-overlay">
               <h2 class="beds-login-portal-title">${cfg.title}</h2>
               <div class="beds-login-portal-sub">${cfg.sub}</div>
               <div class="beds-login-pills-row">
                 ${pillsHtml}
               </div>
-            </div>
+            </div>` : ''}
           </div>
 
           <!-- RIGHT: Common Branded Login Panel -->
