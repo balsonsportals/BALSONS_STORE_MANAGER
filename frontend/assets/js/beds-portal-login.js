@@ -41,6 +41,30 @@
       pills: ['Inventory', 'Issue', 'Receipt', 'Stock'],
       allowedRoles: ['Super Administrator', 'Management / Director', 'Portal Administrator', 'HOD / Department Head', 'Manager / Supervisor']
     },
+    'operations': {
+      code: 'operations',
+      title: 'Operations & Heavy Lift Portal',
+      sub: 'Erection | Heavy Haulage | SPMT | Crane Logistics',
+      image: 'assets/images/login-safety.jpg',
+      pills: ['Erection', 'Heavy Lift', 'SPMT', 'Logistics'],
+      allowedRoles: ['Super Administrator', 'Management / Director', 'Portal Administrator', 'HOD / Department Head', 'Manager / Supervisor']
+    },
+    'purchase': {
+      code: 'purchase',
+      title: 'Purchase & Procurement Manager',
+      sub: 'Vendor | RFQ | Purchase Orders | GRN | Commercial',
+      image: 'assets/images/login-store.jpg',
+      pills: ['Vendor', 'RFQ', 'Orders', 'Commercial'],
+      allowedRoles: ['Super Administrator', 'Management / Director', 'Portal Administrator', 'HOD / Department Head', 'Manager / Supervisor']
+    },
+    'reports': {
+      code: 'reports',
+      title: 'Central Sync Hub & Reporting Portal',
+      sub: 'Enterprise Sync | Cross-Portal Analytics | Audit | JTRWF',
+      image: 'assets/images/login-gate.jpg',
+      pills: ['Central Sync', 'Analytics', 'Cross-Portal', 'Audit'],
+      allowedRoles: ['Super Administrator', 'Management / Director', 'Portal Administrator']
+    },
     'launcher': {
       code: 'launcher',
       title: 'Enterprise Workspace',
@@ -67,6 +91,9 @@
       else if (path.includes('hr')) this.currentPortal = 'hr';
       else if (path.includes('gate')) this.currentPortal = 'gate';
       else if (path.includes('store')) this.currentPortal = 'store';
+      else if (path.includes('operations')) this.currentPortal = 'operations';
+      else if (path.includes('purchase')) this.currentPortal = 'purchase';
+      else if (path.includes('repot') || path.includes('report') || path.includes('sync')) this.currentPortal = 'reports';
       else this.currentPortal = 'launcher';
     },
 
@@ -211,6 +238,20 @@
       if (e) e.preventDefault();
       this.hideAlert();
 
+      const btnSubmit = document.getElementById('btnSubmitLogin');
+      if (btnSubmit && btnSubmit.disabled) return; // Prevent double submit
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '➔ Authenticating...';
+      }
+
+      const resetBtn = () => {
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '➔ Login';
+        }
+      };
+
       const userField = document.getElementById('loginUserId');
       const passField = document.getElementById('loginPassword');
       const rememberCheck = document.getElementById('loginRememberMe');
@@ -220,6 +261,7 @@
 
       if (!username || !password) {
         this.showAlert('Please provide both User ID and Password.');
+        resetBtn();
         return;
       }
 
@@ -232,6 +274,7 @@
           if (window.BalsonsSuperAdmin.logAudit) {
             window.BalsonsSuperAdmin.logAudit('LOGIN_FAILED_UNKNOWN_USER', `Failed login attempt for unknown user: ${username}`, username);
           }
+          resetBtn();
           return;
         }
 
@@ -240,6 +283,7 @@
           if (window.BalsonsSuperAdmin.logAudit) {
             window.BalsonsSuperAdmin.logAudit('LOGIN_BLOCKED_DEACTIVATED', `Attempted login on deactivated account: ${username}`, username);
           }
+          resetBtn();
           return;
         }
 
@@ -247,6 +291,7 @@
         const validPass = password.length >= 4; // Flexible standard password check
         if (!validPass) {
           this.showAlert('❌ Incorrect password. Please try again.');
+          resetBtn();
           return;
         }
 
@@ -257,11 +302,12 @@
                           this.currentPortal === 'launcher';
 
         if (!canAccess) {
-          const cfg = PORTAL_CONFIGS[this.currentPortal];
+          const cfg = PORTAL_CONFIGS[this.currentPortal] || PORTAL_CONFIGS['launcher'];
           this.showAlert(`⛔ Access Denied: Account @${matched.username} (${matched.role}) does not have permission to access ${cfg.title} under the Global Super Admin Policy.`);
           if (window.BalsonsSuperAdmin.logAudit) {
             window.BalsonsSuperAdmin.logAudit('UNAUTHORIZED_PORTAL_LOGIN_ATTEMPT', `User ${username} attempted to access unauthorized portal: ${this.currentPortal}`, this.currentPortal);
           }
+          resetBtn();
           return;
         }
 
@@ -279,14 +325,18 @@
           window.BalsonsSuperAdmin.logAudit('USER_LOGIN_SUCCESS', `User @${matched.username} logged into ${this.currentPortal.toUpperCase()} portal`, this.currentPortal);
         }
 
-        this.showAlert(`✔ Login Successful! Accessing ${PORTAL_CONFIGS[this.currentPortal].title}...`, true);
+        const portalTitle = (PORTAL_CONFIGS[this.currentPortal] || PORTAL_CONFIGS['launcher']).title;
+        this.showAlert(`✔ Login Successful! Accessing ${portalTitle}...`, true);
 
         setTimeout(() => {
           this.hideLoginScreen();
+          resetBtn();
           if (window.BalsonsWorkspace && typeof window.BalsonsWorkspace.updateAuthorityDisplay === 'function') {
             window.BalsonsWorkspace.updateAuthorityDisplay();
           }
         }, 500);
+      } else {
+        resetBtn();
       }
     },
 

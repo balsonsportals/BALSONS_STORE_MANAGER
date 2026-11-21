@@ -21,6 +21,12 @@ const BalsonsStoreApp = {
   currentStatusFilter: 'ALL',
   searchQuery: '',
 
+  escapeHtml: function(str) {
+    if (typeof window.bedsEscapeHtml === 'function') return window.bedsEscapeHtml(str);
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  },
+
   init: function() {
     this.initTheme();
     this.initAuth();
@@ -337,29 +343,29 @@ const BalsonsStoreApp = {
       return `
         <tr>
           <td>
-            <a href="javascript:void(0)" onclick="BalsonsStoreApp.openToolDetailModal('${t.id}')" style="font-family: monospace; font-weight: 800; color: var(--beds-teal-primary); text-decoration: none;" title="Click for complete specification dossier">
-              ${t.id} 🔍
+            <a href="javascript:void(0)" onclick="BalsonsStoreApp.openToolDetailModal('${this.escapeHtml(t.id)}')" style="font-family: monospace; font-weight: 800; color: var(--beds-teal-primary); text-decoration: none;" title="Click for complete specification dossier">
+              ${this.escapeHtml(t.id)} 🔍
             </a>
           </td>
           <td>
-            <strong style="color: var(--beds-charcoal-heading);">${t.desc}</strong><br>
-            <small style="color: var(--beds-text-muted);">${t.make} · ${t.model}</small>
+            <strong style="color: var(--beds-charcoal-heading);">${this.escapeHtml(t.desc)}</strong><br>
+            <small style="color: var(--beds-text-muted);">${this.escapeHtml(t.make)} · ${this.escapeHtml(t.model)}</small>
           </td>
-          <td><span class="meta-tag">${t.section}</span></td>
-          <td><strong>${t.capacity || t.spec}</strong></td>
-          <td>${t.binLocation || 'STORE-01'}</td>
-          <td><span class="status-pill ${statusClass}">● ${t.status}</span></td>
+          <td><span class="meta-tag">${this.escapeHtml(t.section)}</span></td>
+          <td><strong>${this.escapeHtml(t.capacity || t.spec)}</strong></td>
+          <td>${this.escapeHtml(t.binLocation || 'STORE-01')}</td>
+          <td><span class="status-pill ${statusClass}">● ${this.escapeHtml(t.status)}</span></td>
           <td>
-            <small>${t.issuedTo || 'In Store Bins'}</small>
+            <small>${this.escapeHtml(t.issuedTo || 'In Store Bins')}</small>
           </td>
           <td style="text-align: right; white-space: nowrap;">
-            <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.openToolDetailModal('${t.id}')" title="View Dossier">Specs</button>
+            <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.openToolDetailModal('${this.escapeHtml(t.id)}')" title="View Dossier">Specs</button>
             ${t.status === 'AVAILABLE' ? `
-              <button class="beds-btn beds-btn-sm beds-btn-primary" onclick="BalsonsStoreApp.openIssueModal('${t.id}')">Issue →</button>
+              <button class="beds-btn beds-btn-sm beds-btn-primary" onclick="BalsonsStoreApp.openIssueModal('${this.escapeHtml(t.id)}')">Issue →</button>
             ` : (t.status === 'ISSUED' ? `
-              <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.openReturnModal('${t.id}')">Return ↵</button>
+              <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.openReturnModal('${this.escapeHtml(t.id)}')">Return ↵</button>
             ` : `
-              <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.openQuarantineModal('${t.id}')">Red Tag</button>
+              <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsStoreApp.openQuarantineModal('${this.escapeHtml(t.id)}')">Red Tag</button>
             `)}
           </td>
         </tr>

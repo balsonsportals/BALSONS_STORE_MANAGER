@@ -529,9 +529,63 @@
           dd.classList.remove('open');
         }
       });
+    },
+
+    /**
+     * V5.0 Class B Enhancement: Global HTML Sanitization for XSS Prevention
+     */
+    escapeHtml: function(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    },
+
+    /**
+     * V5.0 Class B Enhancement: AbortController-bounded Fetch with configurable timeout (default 10s)
+     */
+    fetchWithTimeout: async function(url, options = {}, timeoutMs = 10000) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (err) {
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+          throw new Error(`Request timed out after ${timeoutMs}ms`);
+        }
+        throw err;
+      }
+    },
+
+    /**
+     * V5.0 Class B Enhancement: In-Flight Duplicate Request Prevention
+     */
+    _activeGuards: new Set(),
+    runGuarded: async function(key, asyncFn) {
+      if (this._activeGuards.has(key)) {
+        console.warn(`[Workspace] Action '${key}' is already in-flight. Duplicate execution prevented.`);
+        return { duplicate: true, success: false };
+      }
+      this._activeGuards.add(key);
+      try {
+        return await asyncFn();
+      } finally {
+        this._activeGuards.delete(key);
+      }
     }
   };
 
+  // Expose global shorthand for convenience across all portal scripts
+  window.bedsEscapeHtml = BalsonsWorkspace.escapeHtml;
   window.BalsonsWorkspace = BalsonsWorkspace;
 
   if (document.readyState === 'loading') {

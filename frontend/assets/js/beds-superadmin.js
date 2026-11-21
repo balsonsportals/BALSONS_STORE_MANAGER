@@ -242,7 +242,17 @@
       if (this.auditLogs.length > 200) this.auditLogs.pop();
       try {
         localStorage.setItem(STORAGE_KEYS.AUDIT, JSON.stringify(this.auditLogs));
-      } catch (e) {}
+      } catch (e) {
+        console.warn('[Governance] Audit log storage warning (pruning older entries):', e);
+        try {
+          if (this.auditLogs.length > 50) {
+            this.auditLogs = this.auditLogs.slice(0, 50);
+            localStorage.setItem(STORAGE_KEYS.AUDIT, JSON.stringify(this.auditLogs));
+          }
+        } catch (innerErr) {
+          console.error('[Governance] Failed to persist audit logs to localStorage:', innerErr);
+        }
+      }
       return entry;
     },
 

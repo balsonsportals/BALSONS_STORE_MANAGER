@@ -258,7 +258,9 @@
       try {
         const raw = localStorage.getItem(STORAGE_KEYS.SESSION);
         if (raw) return JSON.parse(raw);
-      } catch (e) {}
+      } catch (e) {
+        console.warn("[SAM-Auth] Session parse exception, falling back to default Super Admin:", e);
+      }
       return INITIAL_USERS[0]; // fallback to Super Admin
     }
 
