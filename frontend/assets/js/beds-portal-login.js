@@ -212,26 +212,41 @@
     },
 
     checkSessionState: function() {
-      // Check if session exists in BalsonsSuperAdmin
-      if (window.BalsonsSuperAdmin) {
-        const user = window.BalsonsSuperAdmin.getCurrentUser();
-        const hasSession = localStorage.getItem('balsons_global_auth_session');
-        if (user && hasSession && window.BalsonsSuperAdmin.canAccessPortal(this.currentPortal)) {
-          this.hideLoginScreen();
-        } else {
-          this.showLoginScreen();
-        }
+      // Mandate: Every portal starts with the Login Screen
+      this.showLoginScreen();
+
+      // If user was remembered or active in session, pre-populate their user ID
+      const savedUser = localStorage.getItem('balsons_remembered_username') || 
+                        (window.BalsonsSuperAdmin && window.BalsonsSuperAdmin.currentUser ? window.BalsonsSuperAdmin.currentUser.username : '');
+      const userField = document.getElementById('loginUserId');
+      if (userField && savedUser && !userField.value) {
+        userField.value = savedUser;
       }
     },
 
     showLoginScreen: function() {
       const wrapper = document.getElementById('beds-portal-login-wrapper');
-      if (wrapper) wrapper.classList.remove('hidden');
+      if (wrapper) {
+        wrapper.classList.remove('hidden');
+        const card = wrapper.querySelector('.beds-login-card');
+        if (card) card.classList.remove('unlocking');
+      }
     },
 
     hideLoginScreen: function() {
       const wrapper = document.getElementById('beds-portal-login-wrapper');
-      if (wrapper) wrapper.classList.add('hidden');
+      if (wrapper) {
+        const card = wrapper.querySelector('.beds-login-card');
+        if (card) {
+          card.classList.add('unlocking');
+          setTimeout(() => {
+            wrapper.classList.add('hidden');
+            card.classList.remove('unlocking');
+          }, 450);
+        } else {
+          wrapper.classList.add('hidden');
+        }
+      }
     },
 
     handleLoginSubmit: function(e) {

@@ -82,6 +82,20 @@
       return '';
     },
 
+    getDeptHref: function(dept) {
+      if (typeof window !== 'undefined' && window.location && window.location.hostname && window.location.hostname.includes('github.io')) {
+        const ghMap = {
+          'safety': '/BALSONS_SAFETY_PORTAL/frontend/index.html',
+          'hr': '/BALSONS_HR_PORTAL/frontend/index.html',
+          'gate': '/BALSONS_GATE_ENTRY_PORTAL/frontend/index.html',
+          'store': '/BALSONS_STORE_MANAGER/frontend/index.html',
+          'launcher': '/index.html'
+        };
+        if (ghMap[dept.code]) return ghMap[dept.code];
+      }
+      return this.getRootPrefix() + dept.rootPath;
+    },
+
     getCurrentPortalCode: function() {
       const path = window.location.pathname.toLowerCase();
       if (path.includes('safety')) return 'safety';
@@ -181,7 +195,7 @@
       const spreadsheetUrl = 'https://docs.google.com/spreadsheets/d/' + db.id + '/edit';
 
       const deptLinksHtml = DEPARTMENTS.map(d => {
-        const targetHref = prefix + d.rootPath;
+        const targetHref = this.getDeptHref(d);
         const isActive = d.code === currentPortal;
         return `
           <a href="${targetHref}" onclick="return BalsonsWorkspace.handleDeptClick(event, '${d.code}', '${targetHref}')" class="beds-dept-item ${isActive ? 'active' : ''}">
@@ -351,9 +365,8 @@
 
     renderDrawerDeptLinks: function() {
       const currentPortal = this.getCurrentPortalCode();
-      const prefix = this.getRootPrefix();
       return DEPARTMENTS.map(d => {
-        const targetHref = prefix + d.rootPath;
+        const targetHref = this.getDeptHref(d);
         const isActive = d.code === currentPortal;
         return `
           <a href="${targetHref}" onclick="return BalsonsWorkspace.handleDeptClick(event, '${d.code}', '${targetHref}')" class="beds-drawer-nav-item ${isActive ? 'active' : ''}">
