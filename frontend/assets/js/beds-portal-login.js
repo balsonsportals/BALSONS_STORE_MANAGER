@@ -3,6 +3,7 @@
  * Governing Reference: ANTIGRAVITY ALL PORTALS UPDATE REFERENCE V1.1
  * Company: BALSONS HEAVY LIFT & SHIFT
  * Slogan: "Difficult We Do Easily, Impossible Takes Little Time...!"
+ * Enhanced: Smart Role Selection Dropdown with Bidirectional Auto-Fill & Tier Badges
  */
 
 (function() {
@@ -97,6 +98,60 @@
       else this.currentPortal = 'launcher';
     },
 
+    getPortalAdminInfo: function() {
+      const p = this.currentPortal;
+      const map = {
+        'safety': { username: 'admin.safety', name: 'Gajendra Rao (HSE Lead)', shortName: 'Gajendra Rao', label: 'Safety Portal Admin' },
+        'hr': { username: 'admin.hr', name: 'Priyanka Senapati (HR Manager)', shortName: 'Priyanka Senapati', label: 'HR Portal Admin' },
+        'gate': { username: 'admin.gate', name: 'Bikash Mohapatra (Gate In-Charge)', shortName: 'Bikash Mohapatra', label: 'Gate Entry Admin' },
+        'store': { username: 'admin.store', name: 'Gagan Bihari Das (Chief Store In-Charge)', shortName: 'Gagan Bihari Das', label: 'Store Portal Admin' },
+        'operations': { username: 'director.mgmt', name: 'Satish Chandra', shortName: 'Satish Chandra', label: 'Operations Lead' },
+        'purchase': { username: 'admin.store', name: 'Gagan Bihari Das', shortName: 'Gagan Bihari Das', label: 'Procurement Admin' },
+        'reports': { username: 'superadmin', name: 'Prashant Mohanty', shortName: 'Prashant Mohanty', label: 'Sync Hub Lead' },
+        'launcher': { username: 'superadmin', name: 'Prashant Mohanty', shortName: 'Prashant Mohanty', label: 'Enterprise Lead' }
+      };
+      return map[p] || map['launcher'];
+    },
+
+    buildRoleSelectHtml: function() {
+      const isLauncher = (this.currentPortal === 'launcher');
+      const adminInfo = this.getPortalAdminInfo();
+
+      let options = `
+        <option value="" disabled selected>✨ Select Enterprise Role (Smart Auto-Fill)...</option>
+        <option value="superadmin" data-icon="👑" data-role="Super Administrator" data-desc="Complete global master access across all portals, records and governance.">👑 Super Administrator (Executive Global Control)</option>
+        <option value="director.mgmt" data-icon="🏛️" data-role="Management / Director" data-desc="Executive Directorate • Store & Safety access.">🏛️ Management / Director (Satish Chandra)</option>
+      `;
+
+      if (isLauncher) {
+        options += `
+        <optgroup label="⚙️ Portal Administrators (Full Domain Control)">
+          <option value="admin.safety" data-icon="🛡️" data-role="Safety Portal Admin" data-desc="Gajendra Rao (HSE Lead) • Safety, PTW & Compliance.">🛡️ Safety Portal Admin (Gajendra Rao)</option>
+          <option value="admin.hr" data-icon="👥" data-role="HR Portal Admin" data-desc="Priyanka Senapati (HR Manager) • HR, Attendance & Payroll.">👥 HR Portal Admin (Priyanka Senapati)</option>
+          <option value="admin.gate" data-icon="🚪" data-role="Gate Entry Admin" data-desc="Bikash Mohapatra (Gate In-Charge) • Turnstiles & Site Security.">🚪 Gate Entry Admin (Bikash Mohapatra)</option>
+          <option value="admin.store" data-icon="📦" data-role="Store Portal Admin" data-desc="Gagan Bihari Das (Chief Store In-Charge) • Rigging & Tool Inventory.">📦 Store Portal Admin (Gagan Bihari Das)</option>
+        </optgroup>
+        `;
+      } else {
+        options += `
+        <optgroup label="⚙️ Assigned Portal Administrator">
+          <option value="${adminInfo.username}" data-icon="⚙️" data-role="Portal Administrator" data-desc="${adminInfo.name} • Assigned administrator for ${adminInfo.label}.">⚙️ ${adminInfo.label} (${adminInfo.shortName})</option>
+        </optgroup>
+        `;
+      }
+
+      options += `
+        <optgroup label="📋 Field Operations & Supervision">
+          <option value="hod.rigging" data-icon="📋" data-role="HOD / Department Head" data-desc="Ashok Mohanty (HOD Rigging) • Heavy Lift & Rigging Operations.">📋 HOD / Department Head (Ashok Mohanty)</option>
+          <option value="sup.bay3" data-icon="👷" data-role="Manager / Supervisor" data-desc="Dilip Rout (Supervisor Bay-3) • Lifting Operations & Permits.">👷 Manager / Supervisor (Dilip Rout)</option>
+          <option value="emp.ramesh" data-icon="👤" data-role="Employee / General User" data-desc="Ramesh Kumar (Lead Rigger) • General Shift & Turnstile Access.">👤 Employee / Crew (Ramesh Kumar)</option>
+        </optgroup>
+        <option value="custom" data-icon="✏️" data-role="Custom Account" data-desc="Enter any custom registered enterprise user ID below.">✏️ Custom / Other User ID...</option>
+      `;
+
+      return options;
+    },
+
     injectLoginScreen: function() {
       if (document.getElementById('beds-portal-login-wrapper')) return;
 
@@ -115,6 +170,71 @@
       const savedUser = localStorage.getItem('balsons_remembered_username') || '';
 
       wrapper.innerHTML = `
+        <style id="beds-smart-role-styles">
+          .beds-role-field {
+            position: relative;
+            cursor: pointer;
+            background: var(--beds-bg-page, #f8fafc);
+            transition: all var(--beds-transition, 0.2s ease);
+          }
+          .beds-role-select {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 9px 0;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 600;
+            color: var(--beds-text-primary, #102a35);
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+          }
+          .beds-role-select option, .beds-role-select optgroup {
+            background: #ffffff;
+            color: #102a35;
+            font-weight: 500;
+            padding: 8px 12px;
+          }
+          .beds-role-select optgroup {
+            font-weight: 700;
+            color: #475569;
+            background: #f1f5f9;
+          }
+          .beds-role-chevron {
+            pointer-events: none;
+            font-size: 10px;
+            color: var(--beds-text-muted, #64748b);
+            margin-left: 6px;
+            transition: transform 0.2s ease;
+          }
+          .beds-role-field:focus-within .beds-role-chevron {
+            transform: rotate(180deg);
+            color: var(--beds-teal-primary, #0097a7);
+          }
+          .beds-role-desc-badge {
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-top: 6px;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.4;
+            background: rgba(16, 45, 53, 0.05);
+            border: 1px solid rgba(16, 45, 53, 0.12);
+            color: var(--beds-text-secondary, #334155);
+            animation: bedsRoleBadgeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+          @keyframes bedsRoleBadgeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        </style>
+
         <div class="beds-login-card">
           <!-- LEFT: Realistic Portal-Specific Photograph & Badges -->
           <div class="beds-login-left">
@@ -142,17 +262,40 @@
             <div class="beds-login-alert" id="loginAlertBox" style="display: none;"></div>
 
             <form id="bedsLoginForm" onsubmit="BalsonsPortalLogin.handleLoginSubmit(event)">
+              <!-- SMART ROLE SELECTION DROPDOWN -->
               <div class="beds-login-field-wrap">
+                <label style="display: block; font-size: 11px; font-weight: 700; color: var(--beds-text-secondary, #334155); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Select Role (Smart Auto-Fill)
+                </label>
+                <div class="beds-login-field beds-role-field">
+                  <span class="beds-field-icon" id="roleIcon">🛡️</span>
+                  <select id="loginRoleSelect" class="beds-role-select" onchange="BalsonsPortalLogin.handleRoleChange(this.value)">
+                    ${this.buildRoleSelectHtml()}
+                  </select>
+                  <span class="beds-role-chevron">▼</span>
+                </div>
+                <div id="roleDescBadge" class="beds-role-desc-badge" style="display: none;"></div>
+              </div>
+
+              <!-- ENTERPRISE USER ID (BIDIRECTIONAL SMART SYNC) -->
+              <div class="beds-login-field-wrap">
+                <label style="display: block; font-size: 11px; font-weight: 700; color: var(--beds-text-secondary, #334155); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Enterprise User ID
+                </label>
                 <div class="beds-login-field">
-                  <span class="beds-field-icon">👤</span>
-                  <input type="text" id="loginUserId" placeholder="User ID" required autocomplete="username" value="${savedUser}">
+                  <span class="beds-field-icon" id="userFieldIcon">👤</span>
+                  <input type="text" id="loginUserId" placeholder="User ID (e.g. superadmin, admin.safety)" required autocomplete="username" value="${savedUser}" oninput="BalsonsPortalLogin.handleUserIdInput(this.value)">
                 </div>
               </div>
 
+              <!-- PASSWORD WITH VISIBILITY TOGGLE -->
               <div class="beds-login-field-wrap">
+                <label style="display: block; font-size: 11px; font-weight: 700; color: var(--beds-text-secondary, #334155); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Password
+                </label>
                 <div class="beds-login-field">
                   <span class="beds-field-icon">🔒</span>
-                  <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
+                  <input type="password" id="loginPassword" placeholder="Enter password (e.g. balsons@2026)" required autocomplete="current-password">
                   <button type="button" class="beds-pw-toggle" onclick="BalsonsPortalLogin.togglePasswordVisibility()" title="Show/Hide Password">👁</button>
                 </div>
               </div>
@@ -186,6 +329,110 @@
       document.body.appendChild(wrapper);
     },
 
+    handleRoleChange: function(selectedVal) {
+      const userField = document.getElementById('loginUserId');
+      const passField = document.getElementById('loginPassword');
+      const roleSelect = document.getElementById('loginRoleSelect');
+      const roleIcon = document.getElementById('roleIcon');
+      const badge = document.getElementById('roleDescBadge');
+
+      if (!selectedVal || selectedVal === 'custom') {
+        if (roleIcon) roleIcon.textContent = '✏️';
+        if (userField && selectedVal === 'custom') {
+          userField.value = '';
+          userField.focus();
+        }
+        if (badge) {
+          badge.style.display = 'flex';
+          badge.innerHTML = `<span>✏️</span> <span><strong>Custom User ID:</strong> Enter your registered enterprise account below.</span>`;
+        }
+        return;
+      }
+
+      // Populate user ID
+      if (userField) {
+        userField.value = selectedVal;
+      }
+
+      // Find option metadata
+      const opt = roleSelect ? roleSelect.querySelector(`option[value="${selectedVal}"]`) : null;
+      const icon = opt ? (opt.getAttribute('data-icon') || '👤') : '👤';
+      const desc = opt ? opt.getAttribute('data-desc') : '';
+      const roleName = opt ? opt.getAttribute('data-role') : '';
+
+      if (roleIcon) roleIcon.textContent = icon;
+
+      if (badge && desc) {
+        badge.style.display = 'flex';
+        badge.innerHTML = `<span>${icon}</span> <span><strong>${roleName}:</strong> ${desc}</span>`;
+      }
+
+      // Move focus smoothly to password field
+      if (passField && !passField.value) {
+        passField.focus();
+      }
+    },
+
+    handleUserIdInput: function(rawVal) {
+      const val = (rawVal || '').trim().toLowerCase();
+      const roleSelect = document.getElementById('loginRoleSelect');
+      const roleIcon = document.getElementById('roleIcon');
+      const badge = document.getElementById('roleDescBadge');
+
+      if (!val) {
+        if (roleSelect) roleSelect.value = '';
+        if (roleIcon) roleIcon.textContent = '🛡️';
+        if (badge) badge.style.display = 'none';
+        return;
+      }
+
+      // Smart reverse matching
+      let matchedVal = null;
+      if (val === 'superadmin' || val.includes('super')) {
+        matchedVal = 'superadmin';
+      } else if (val === 'director.mgmt' || val.includes('director')) {
+        matchedVal = 'director.mgmt';
+      } else if (val === 'admin.safety' || (val.includes('safety') && val.includes('admin'))) {
+        matchedVal = (this.currentPortal === 'launcher') ? 'admin.safety' : this.getPortalAdminInfo().username;
+      } else if (val === 'admin.hr' || (val.includes('hr') && val.includes('admin'))) {
+        matchedVal = (this.currentPortal === 'launcher') ? 'admin.hr' : this.getPortalAdminInfo().username;
+      } else if (val === 'admin.gate' || (val.includes('gate') && val.includes('admin'))) {
+        matchedVal = (this.currentPortal === 'launcher') ? 'admin.gate' : this.getPortalAdminInfo().username;
+      } else if (val === 'admin.store' || (val.includes('store') && val.includes('admin'))) {
+        matchedVal = (this.currentPortal === 'launcher') ? 'admin.store' : this.getPortalAdminInfo().username;
+      } else if (val === 'hod.rigging' || val.includes('hod')) {
+        matchedVal = 'hod.rigging';
+      } else if (val === 'sup.bay3' || val.includes('sup')) {
+        matchedVal = 'sup.bay3';
+      } else if (val === 'emp.ramesh' || val.includes('emp')) {
+        matchedVal = 'emp.ramesh';
+      } else {
+        matchedVal = 'custom';
+      }
+
+      if (roleSelect) {
+        const optionExists = roleSelect.querySelector(`option[value="${matchedVal}"]`);
+        if (optionExists) {
+          roleSelect.value = matchedVal;
+        } else {
+          roleSelect.value = 'custom';
+          matchedVal = 'custom';
+        }
+      }
+
+      const opt = roleSelect ? roleSelect.querySelector(`option[value="${matchedVal}"]`) : null;
+      const icon = opt ? (opt.getAttribute('data-icon') || '👤') : '👤';
+      const desc = opt ? opt.getAttribute('data-desc') : `User ID: @${val}`;
+      const roleName = opt ? opt.getAttribute('data-role') : 'Custom User';
+
+      if (roleIcon) roleIcon.textContent = icon;
+
+      if (badge) {
+        badge.style.display = 'flex';
+        badge.innerHTML = `<span>${icon}</span> <span><strong>${roleName}:</strong> ${desc}</span>`;
+      }
+    },
+
     togglePasswordVisibility: function() {
       const pwInput = document.getElementById('loginPassword');
       if (pwInput) {
@@ -216,12 +463,15 @@
       // Mandate: Every portal starts with the Login Screen
       this.showLoginScreen();
 
-      // If user was remembered or active in session, pre-populate their user ID
+      // If user was remembered or active in session, pre-populate their user ID and trigger smart role sync
       const savedUser = localStorage.getItem('balsons_remembered_username') || 
                         (window.BalsonsSuperAdmin && window.BalsonsSuperAdmin.currentUser ? window.BalsonsSuperAdmin.currentUser.username : '');
       const userField = document.getElementById('loginUserId');
       if (userField && savedUser && !userField.value) {
         userField.value = savedUser;
+        this.handleUserIdInput(savedUser);
+      } else if (userField && userField.value) {
+        this.handleUserIdInput(userField.value);
       }
     },
 
