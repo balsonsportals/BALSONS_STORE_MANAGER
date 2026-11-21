@@ -187,7 +187,10 @@
     },
 
     injectEnterpriseTopbar: function() {
-      if (document.getElementById('beds-enterprise-topbar')) return;
+      const existing = document.getElementById('beds-enterprise-topbar');
+      if (existing) existing.remove();
+      // Suppress redundant second topbar to keep clean executive master header
+      return;
 
       const currentPortal = this.getCurrentPortalCode();
       const prefix = this.getRootPrefix();

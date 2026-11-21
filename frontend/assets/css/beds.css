@@ -1580,3 +1580,23 @@ table.beds-data-table tr:hover td, table.data-table tr:hover td {
     font-size: 10px !important;
   }
 }
+
+
+/* ============================================================================
+ * GLOBAL EXECUTIVE OVERRIDE: HIDE ALL SIMULATOR & POLICY BARS ACROSS PORTALS
+ * Mandate: Remove 🛡️ GLOBAL SUPER ADMIN POLICY V1.0 from all portal & user screens
+ * ============================================================================ */
+#sam-global-topbar,
+.sam-gov-bar,
+.sam-gov-policy,
+#beds-enterprise-topbar,
+.beds-enterprise-topbar {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

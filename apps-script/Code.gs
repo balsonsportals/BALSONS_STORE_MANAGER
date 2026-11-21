@@ -40,8 +40,7 @@ function doGet(e) {
         break;
 
       case 'initDb':
-        var initResult = initStoreDatabase();
-        responseData = { success: true, message: initResult };
+        responseData = { success: false, error: 'ROUTE_DISABLED', message: 'Legacy database initialization via GET is disabled for security.' };
         break;
 
       case 'inventory':
@@ -134,20 +133,14 @@ function doPost(e) {
         break;
 
       case 'db.init':
-        var msg = initStoreDatabase(payload.spreadsheetId);
-        responseData = { success: true, message: msg };
-        break;
-
       case 'loans.issue':
-        responseData = StoreService.issueToolLoan(payload);
-        break;
-
       case 'loans.return':
-        responseData = StoreService.returnToolLoan(payload.txId, payload.condition, payload.notes);
-        break;
-
       case 'quarantine.tag':
-        responseData = StoreService.tagRedQuarantine(payload);
+        responseData = {
+          success: false,
+          error: 'ENDPOINT_DECOMMISSIONED',
+          message: 'Store Manager operates under an offline-first, zero-server IndexedDB architecture (Sections 4 & 16). Public Apps Script mutation endpoints are decommissioned.'
+        };
         break;
 
       default:
