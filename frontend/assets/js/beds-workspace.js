@@ -28,7 +28,7 @@
       fullName: 'Gate Entry & Turnstile Access Master'
     },
     'operations': {
-      id: '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
+      id: '1GeqDDmBgdVm3ZUp4c9iB36__iLJ9wADQQRhEIwVxa-E',
       name: 'Operations',
       fullName: 'Operations Erection & Heavy Lift Master'
     },
@@ -512,6 +512,10 @@
         } else if (currentPortal === 'store') {
           if (window.BalsonsStoreApp && typeof window.BalsonsStoreApp.refreshData === 'function') {
             await window.BalsonsStoreApp.refreshData();
+          }
+        } else if (currentPortal === 'operations') {
+          if (window.BalsonsOpsApp && typeof window.BalsonsOpsApp.init === 'function') {
+            await window.BalsonsOpsApp.init();
           }
         }
 
