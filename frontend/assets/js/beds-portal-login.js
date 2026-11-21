@@ -460,12 +460,54 @@
     },
 
     checkSessionState: function() {
-      // Mandate: Every portal starts with the Login Screen
+      // 1. Check for an existing valid persistent session in browser/localStorage (IndexedDB/Browser Persistence)
+      let activeSession = null;
+      try {
+        const raw = localStorage.getItem('balsons_global_auth_session');
+        if (raw) activeSession = JSON.parse(raw);
+      } catch (e) {
+        activeSession = null;
+      }
+
+      // If active session exists, restore session without requiring re-login on refresh
+      if (activeSession && activeSession.authenticated && activeSession.username) {
+        let user = null;
+        if (window.BalsonsSuperAdmin && Array.isArray(window.BalsonsSuperAdmin.users)) {
+          user = window.BalsonsSuperAdmin.users.find(u => u.username.toLowerCase() === activeSession.username.toLowerCase());
+        }
+
+        if (user && user.status === 'Active') {
+          const canAccess = (window.BalsonsSuperAdmin && window.BalsonsSuperAdmin.isSuperAdmin && window.BalsonsSuperAdmin.isSuperAdmin()) || 
+                            user.permittedPortals.includes(this.currentPortal) || 
+                            user.permittedPortals.includes('all') || 
+                            this.currentPortal === 'launcher';
+
+          if (canAccess) {
+            // USER IS VALID AND LOGGED IN: Keep login overlay completely hidden on page refresh!
+            if (window.BalsonsSuperAdmin) {
+              window.BalsonsSuperAdmin.currentUser = user;
+              window.BalsonsSuperAdmin.saveSession();
+            }
+
+            const wrapper = document.getElementById('beds-portal-login-wrapper');
+            if (wrapper) {
+              wrapper.classList.add('hidden');
+            }
+
+            if (window.BalsonsWorkspace && typeof window.BalsonsWorkspace.updateAuthorityDisplay === 'function') {
+              window.BalsonsWorkspace.updateAuthorityDisplay();
+            }
+            console.log(`✓ [BALSONS Auth] Persistent session restored for @${user.username} (${user.role}). Refresh page does not log out.`);
+            return;
+          }
+        }
+      }
+
+      // 2. If no active session or user logged out, display the login screen
       this.showLoginScreen();
 
-      // If user was remembered or active in session, pre-populate their user ID and trigger smart role sync
-      const savedUser = localStorage.getItem('balsons_remembered_username') || 
-                        (window.BalsonsSuperAdmin && window.BalsonsSuperAdmin.currentUser ? window.BalsonsSuperAdmin.currentUser.username : '');
+      // If user was remembered, pre-populate their user ID and trigger smart role sync
+      const savedUser = localStorage.getItem('balsons_remembered_username') || '';
       const userField = document.getElementById('loginUserId');
       if (userField && savedUser && !userField.value) {
         userField.value = savedUser;
@@ -581,6 +623,18 @@
         window.BalsonsSuperAdmin.currentUser = matched;
         window.BalsonsSuperAdmin.saveSession();
 
+        // USER MANDATE: Persist session in browser/localStorage so refresh page does not log out
+        const sessionPayload = {
+          authenticated: true,
+          username: matched.username,
+          role: matched.role,
+          name: matched.name,
+          portal: this.currentPortal,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem('balsons_global_auth_session', JSON.stringify(sessionPayload));
+        localStorage.setItem('balsons_session_active', 'true');
+
         if (rememberCheck && rememberCheck.checked) {
           localStorage.setItem('balsons_remembered_username', username);
         } else {
@@ -611,8 +665,11 @@
         window.BalsonsSuperAdmin.logAudit('USER_LOGOUT', `User signed out from ${this.currentPortal.toUpperCase()}`, this.currentPortal);
       }
       localStorage.removeItem('balsons_global_auth_session');
+      localStorage.removeItem('balsons_session_active');
+      localStorage.removeItem('balsons_superadmin_session_v1');
+      sessionStorage.clear();
       this.showLoginScreen();
-      this.showAlert('You have been safely signed out.', true);
+      this.showAlert('You have been safely signed out. Please sign in to continue.', true);
     }
   };
 
