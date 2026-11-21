@@ -21,6 +21,21 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function escapeJs(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/['\\\n\r]/g, '\\$&');
+  }
+
   const POLICY = {
     TITLE: "BALSONS COMMON PORTAL INFORMATION DISPLAY & AUTHORITY ACCESS",
     SUBTITLE: "GLOBAL SUPER ADMINISTRATOR POLICY",
@@ -263,6 +278,23 @@
       };
       localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(sessionObj));
       this.logAudit("SESSION_SWITCH", `Active user switched to ${user.fullName} (${user.role})`, user.username);
+
+      // Bi-directional cross-sync with BalsonsSuperAdmin if present
+      if (typeof window !== 'undefined' && window.BalsonsSuperAdmin && Array.isArray(window.BalsonsSuperAdmin.users)) {
+        try {
+          const matched = window.BalsonsSuperAdmin.users.find(u => u.username.toLowerCase() === user.username.toLowerCase());
+          if (matched && window.BalsonsSuperAdmin.currentUser !== matched) {
+            window.BalsonsSuperAdmin.currentUser = matched;
+            window.BalsonsSuperAdmin.saveSession();
+            if (window.BalsonsWorkspace && typeof window.BalsonsWorkspace.updateAuthorityDisplay === 'function') {
+              window.BalsonsWorkspace.updateAuthorityDisplay();
+            }
+          }
+        } catch (e) {
+          console.warn('[SAM-Auth] SuperAdmin cross-sync notice:', e);
+        }
+      }
+
       return sessionObj;
     }
 

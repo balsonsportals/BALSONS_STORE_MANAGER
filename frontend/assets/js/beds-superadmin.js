@@ -17,6 +17,21 @@
 (function() {
   'use strict';
 
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function escapeJs(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/['\\\n\r]/g, '\\$&');
+  }
+
   const STORAGE_KEYS = {
     SESSION: 'balsons_global_auth_session',
     USERS: 'balsons_global_users',
@@ -310,6 +325,15 @@
       this.saveSession();
       this.logAudit('USER_ROLE_SWITCH', `Switched active session to ${target.username} (${target.role})`, target.username);
       
+      // Bi-directional cross-sync with BalsonsSAMAuth if present
+      if (window.BalsonsSAMAuth && typeof window.BalsonsSAMAuth.switchRole === 'function') {
+        try {
+          window.BalsonsSAMAuth.switchRole(target.username);
+        } catch (e) {
+          console.warn('[Governance] SAM Auth cross-sync notice:', e);
+        }
+      }
+
       // Update topbar badges
       if (window.BalsonsWorkspace && typeof window.BalsonsWorkspace.updateAuthorityDisplay === 'function') {
         window.BalsonsWorkspace.updateAuthorityDisplay();
@@ -628,35 +652,35 @@
                     ${this.users.map(u => `
                       <tr>
                         <td>
-                          <strong>${u.avatar} ${u.fullName}</strong><br>
-                          <small style="font-family: monospace; color: var(--beds-text-muted);">@${u.username}</small>
+                          <strong>${escapeHtml(u.avatar)} ${escapeHtml(u.fullName)}</strong><br>
+                          <small style="font-family: monospace; color: var(--beds-text-muted);">@${escapeHtml(u.username)}</small>
                         </td>
                         <td>
-                          <span class="role-badge" style="font-size: 11px; font-weight: 700;">${u.role}</span><br>
-                          <small style="color: var(--beds-text-muted);">${u.dept}</small>
+                          <span class="role-badge" style="font-size: 11px; font-weight: 700;">${escapeHtml(u.role)}</span><br>
+                          <small style="color: var(--beds-text-muted);">${escapeHtml(u.dept)}</small>
                         </td>
                         <td>
                           <div style="display: flex; gap: 4px; flex-wrap: wrap;">
                             ${u.permittedPortals.map(p => `
                               <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(0, 151, 178, 0.1); color: var(--beds-teal-primary); font-weight: 700;">
-                                ${p.toUpperCase()}
+                                ${escapeHtml(p.toUpperCase())}
                               </span>
                             `).join('')}
                           </div>
                         </td>
                         <td>
                           <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: ${u.status === 'Active' ? '#10B981' : '#E64646'};">
-                            ● ${u.status}
+                            ● ${escapeHtml(u.status)}
                           </span>
                         </td>
                         <td>
                           ${u.locked ? `
                             <span style="font-size: 11px; font-weight: 700; color: #0097B2;">🔒 Locked Master</span>
                           ` : (isSuper ? `
-                            <button class="beds-btn beds-btn-sm ${u.status === 'Active' ? 'beds-btn-danger' : 'beds-btn-success'}" onclick="BalsonsSuperAdmin.handleToggleStatus('${u.username}')" style="padding: 2px 8px; font-size: 10.5px;">
+                            <button class="beds-btn beds-btn-sm ${u.status === 'Active' ? 'beds-btn-danger' : 'beds-btn-success'}" onclick="BalsonsSuperAdmin.handleToggleStatus('${escapeJs(u.username)}')" style="padding: 2px 8px; font-size: 10.5px;">
                               ${u.status === 'Active' ? 'Revoke' : 'Activate'}
                             </button>
-                            <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsSuperAdmin.handleEditPermissions('${u.username}')" style="padding: 2px 8px; font-size: 10.5px; margin-left: 4px;">
+                            <button class="beds-btn beds-btn-sm beds-btn-secondary" onclick="BalsonsSuperAdmin.handleEditPermissions('${escapeJs(u.username)}')" style="padding: 2px 8px; font-size: 10.5px; margin-left: 4px;">
                               Portals
                             </button>
                           ` : `<span style="font-size: 11px; color: var(--beds-text-muted);">Protected</span>`)}
@@ -699,10 +723,10 @@
                     ${this.auditLogs.map(l => `
                       <tr>
                         <td style="font-family: monospace; font-size: 10.5px;">${new Date(l.timestamp).toLocaleTimeString()}</td>
-                        <td><strong>${l.actor}</strong><br><small style="color:var(--beds-text-muted);">${l.role}</small></td>
-                        <td><span style="font-weight: 700; color: var(--beds-teal-primary);">${l.action}</span></td>
-                        <td>${l.details}</td>
-                        <td style="font-family: monospace; font-size: 9.5px; opacity: 0.7;">${l.checksum}</td>
+                        <td><strong>${escapeHtml(l.actor)}</strong><br><small style="color:var(--beds-text-muted);">${escapeHtml(l.role)}</small></td>
+                        <td><span style="font-weight: 700; color: var(--beds-teal-primary);">${escapeHtml(l.action)}</span></td>
+                        <td>${escapeHtml(l.details)}</td>
+                        <td style="font-family: monospace; font-size: 9.5px; opacity: 0.7;">${escapeHtml(l.checksum)}</td>
                       </tr>
                     `).join('')}
                   </tbody>
@@ -875,18 +899,18 @@
               ${this.users.filter(u => u.status === 'Active').map(u => {
                 const isSelected = u.username === currentUser.username;
                 return `
-                  <div onclick="BalsonsSuperAdmin.switchUser('${u.username}')" style="cursor: pointer; border: 1px solid ${isSelected ? 'var(--beds-teal-primary)' : 'var(--beds-border)'}; background: ${isSelected ? 'rgba(0, 151, 178, 0.08)' : 'var(--beds-bg-panel)'}; padding: 10px 14px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; transition: all 0.15s ease;">
+                  <div onclick="BalsonsSuperAdmin.switchUser('${escapeJs(u.username)}')" style="cursor: pointer; border: 1px solid ${isSelected ? 'var(--beds-teal-primary)' : 'var(--beds-border)'}; background: ${isSelected ? 'rgba(0, 151, 178, 0.08)' : 'var(--beds-bg-panel)'}; padding: 10px 14px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; transition: all 0.15s ease;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                      <span style="font-size: 22px;">${u.avatar}</span>
+                      <span style="font-size: 22px;">${escapeHtml(u.avatar)}</span>
                       <div>
                         <div style="display: flex; align-items: center; gap: 8px;">
-                          <strong style="font-size: 13px; color: var(--beds-charcoal-heading);">${u.fullName}</strong>
+                          <strong style="font-size: 13px; color: var(--beds-charcoal-heading);">${escapeHtml(u.fullName)}</strong>
                           <span style="font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 10px; background: rgba(0, 151, 178, 0.15); color: var(--beds-teal-primary);">
-                            ${u.role}
+                            ${escapeHtml(u.role)}
                           </span>
                         </div>
                         <p style="margin: 2px 0 0; font-size: 11px; color: var(--beds-text-muted); line-height: 1.3;">
-                          ${u.description}
+                          ${escapeHtml(u.description)}
                         </p>
                       </div>
                     </div>

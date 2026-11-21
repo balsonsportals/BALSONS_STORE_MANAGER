@@ -27,6 +27,21 @@
       name: 'Gate',
       fullName: 'Gate Entry & Turnstile Access Master'
     },
+    'operations': {
+      id: '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
+      name: 'Operations',
+      fullName: 'Operations Erection & Heavy Lift Master'
+    },
+    'purchase': {
+      id: '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
+      name: 'Purchase',
+      fullName: 'Commercial Procurement & Vendor Master'
+    },
+    'reports': {
+      id: '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
+      name: 'Central Sync Hub',
+      fullName: 'Central Sync Hub & Master Reporting'
+    },
     'launcher': {
       id: '1u_ZKvvCVfEQDAtkoMR68q2d2hEK-eWBnvsS3AGfP6yQ',
       name: 'Ecosystem',
@@ -35,11 +50,14 @@
   };
 
   const DEPARTMENTS = [
-    { code: 'safety', name: '🛡️ Safety & PTW Manager', path: '../BALSONS SAFETY MANAGER/frontend/index.html', rootPath: 'BALSONS SAFETY MANAGER/frontend/index.html' },
-    { code: 'hr', name: '👥 HR & Dual-Wage Payroll', path: '../BALSONS HR MANAGER/frontend/index.html', rootPath: 'BALSONS HR MANAGER/frontend/index.html' },
-    { code: 'gate', name: '🚧 Gate Entry & Turnstile Access', path: '../BALSONS GATE ENTRY MANAGER/frontend/index.html', rootPath: 'BALSONS GATE ENTRY MANAGER/frontend/index.html' },
-    { code: 'store', name: '📦 Store & Rigging Tackles', path: '../BALSONS STORE MANAGER/frontend/index.html', rootPath: 'BALSONS STORE MANAGER/frontend/index.html' },
-    { code: 'launcher', name: '🌐 Central Enterprise Launcher', path: '../../index.html', rootPath: 'index.html' }
+    { code: 'safety', name: '🛡️ Safety & PTW Manager', rootPath: 'BALSONS SAFETY MANAGER/frontend/index.html' },
+    { code: 'hr', name: '👥 HR & Dual-Wage Payroll', rootPath: 'BALSONS HR MANAGER/frontend/index.html' },
+    { code: 'gate', name: '🚧 Gate Entry & Turnstile Access', rootPath: 'BALSONS GATE ENTRY MANAGER/frontend/index.html' },
+    { code: 'store', name: '📦 Store & Rigging Tackles', rootPath: 'BALSONS STORE MANAGER/frontend/index.html' },
+    { code: 'operations', name: '🏗️ Operations & Heavy Lift', rootPath: 'BALSONS OPERATIONS MANAGER/index.html' },
+    { code: 'purchase', name: '📑 Purchase & Vendor Manager', rootPath: 'BALSONS PURCHASE MANAGER/index.html' },
+    { code: 'reports', name: '🌐 Central Sync Hub & Reports', rootPath: 'BALSONS REPOTS PORTAL/index.html' },
+    { code: 'launcher', name: '🚀 Central Enterprise Launcher', rootPath: 'index.html' }
   ];
 
   const BalsonsWorkspace = {
@@ -54,12 +72,25 @@
       console.log('✅ BALSONS Enterprise Workspace, Dual-Sync Engine & Authority Governance Initialized');
     },
 
+    getRootPrefix: function() {
+      const p = window.location.pathname.replace(/\\/g, '/').toLowerCase();
+      if (p.includes('/frontend/')) return '../../';
+      if (p.includes('/balsons enterprise launcher/') || 
+          p.includes('/balsons operations manager/') || 
+          p.includes('/balsons purchase manager/') || 
+          p.includes('/balsons repots portal/')) return '../';
+      return '';
+    },
+
     getCurrentPortalCode: function() {
       const path = window.location.pathname.toLowerCase();
       if (path.includes('safety')) return 'safety';
       if (path.includes('hr')) return 'hr';
       if (path.includes('gate')) return 'gate';
       if (path.includes('store')) return 'store';
+      if (path.includes('operations')) return 'operations';
+      if (path.includes('purchase')) return 'purchase';
+      if (path.includes('repot') || path.includes('report') || path.includes('sync')) return 'reports';
       return 'launcher';
     },
 
@@ -145,12 +176,12 @@
       if (document.getElementById('beds-enterprise-topbar')) return;
 
       const currentPortal = this.getCurrentPortalCode();
-      const isRoot = currentPortal === 'launcher' || !window.location.pathname.includes('/frontend/');
+      const prefix = this.getRootPrefix();
       const db = this.getCurrentPortalDb();
       const spreadsheetUrl = 'https://docs.google.com/spreadsheets/d/' + db.id + '/edit';
 
       const deptLinksHtml = DEPARTMENTS.map(d => {
-        const targetHref = isRoot ? d.rootPath : d.path;
+        const targetHref = prefix + d.rootPath;
         const isActive = d.code === currentPortal;
         return `
           <a href="${targetHref}" onclick="return BalsonsWorkspace.handleDeptClick(event, '${d.code}', '${targetHref}')" class="beds-dept-item ${isActive ? 'active' : ''}">
@@ -193,6 +224,9 @@
         <div class="beds-topbar-right">
           <button class="beds-topbar-role-btn" onclick="window.BalsonsSuperAdmin ? window.BalsonsSuperAdmin.openRoleSwitchModal() : null" type="button" title="Switch Policy Role">
             👤 Switch Role
+          </button>
+          <button class="beds-topbar-role-btn" onclick="window.BalsonsPortalLogin ? window.BalsonsPortalLogin.logout() : null" type="button" title="Sign Out / Lock Portal" style="background: rgba(230, 70, 70, 0.2); border-color: rgba(230, 70, 70, 0.4); color: #FCA5A5;">
+            🔒 Sign Out
           </button>
           <a href="${spreadsheetUrl}" target="_blank" class="beds-topbar-sync-pill" id="bedsSheetSyncPill" title="${db.fullName} (Click to Open: ${db.id})">
             <span class="pulse-dot"></span>
@@ -317,9 +351,9 @@
 
     renderDrawerDeptLinks: function() {
       const currentPortal = this.getCurrentPortalCode();
-      const isRoot = currentPortal === 'launcher' || !window.location.pathname.includes('/frontend/');
+      const prefix = this.getRootPrefix();
       return DEPARTMENTS.map(d => {
-        const targetHref = isRoot ? d.rootPath : d.path;
+        const targetHref = prefix + d.rootPath;
         const isActive = d.code === currentPortal;
         return `
           <a href="${targetHref}" onclick="return BalsonsWorkspace.handleDeptClick(event, '${d.code}', '${targetHref}')" class="beds-drawer-nav-item ${isActive ? 'active' : ''}">

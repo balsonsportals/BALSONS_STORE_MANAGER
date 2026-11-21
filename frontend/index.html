@@ -621,6 +621,7 @@
       <div class="brand-titles">
         <h1 data-i18n="portal_title">BALSONS STORE MANAGER</h1>
         <p data-i18n="portal_sub">JTRWF Khordha Project · Store & Heavy Rigging Inventory System</p>
+        <div style="font-size: 10px; font-style: italic; color: var(--beds-teal-primary); font-weight: 600; margin-top: 1px;">“Difficult We Do Easily, Impossible Takes Little Time...!”</div>
       </div>
     </div>
 
@@ -1808,6 +1809,48 @@
     </div>
   </div>
 
+  <!-- Modal 10: Store Login / Switch User (BEDS V1.0 & SAM-2026 Standard) -->
+  <div class="beds-modal-overlay" id="modal-login">
+    <div class="beds-modal-dialog" style="max-width: 440px;">
+      <div class="beds-modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <img src="assets/images/balsons-logo.png" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/1HB7sGaQ4f2qq0NNzgBQrSpUe2DJWV4uh'" alt="BALSONS Logo" style="height: 36px; width: auto; object-fit: contain;">
+          <div>
+            <h3 class="beds-modal-title" style="margin: 0; font-size: 14px; font-weight: 800;">BALSONS Store Manager</h3>
+            <div style="font-size: 10px; font-style: italic; color: var(--beds-teal-primary); font-weight: 600;">“Difficult We Do Easily, Impossible Takes Little Time...!”</div>
+          </div>
+        </div>
+        <button class="beds-modal-close" onclick="document.getElementById('modal-login').classList.remove('active')">&times;</button>
+      </div>
+      <div style="background: rgba(0, 151, 178, 0.08); padding: 6px 16px; border-bottom: 1px solid var(--beds-border); font-size: 10.5px; color: var(--beds-teal-primary); font-weight: 700;">
+        Secure Login | Authorized Access Only • Rigging Tools & Inventory
+      </div>
+      <form id="form-store-login" onsubmit="handleStoreLogin(event)">
+        <div class="beds-modal-body" style="padding: 16px;">
+          <div id="storeLoginError" style="display: none; background: var(--beds-status-critical-bg); border: 1px solid var(--beds-alert-red); color: var(--beds-alert-red); padding: 8px 12px; border-radius: var(--beds-radius-md); font-size: 12px; margin-bottom: 12px;"></div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="beds-label" style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 4px;">Select Account / Role</label>
+            <select class="beds-select" id="store-login-user" onchange="onStoreUserSelectChange(this)" style="width: 100%;">
+              <option value="store.head">store.head (Gagan Bihari Das - Chief Store In-Charge)</option>
+              <option value="admin">admin (Gajendra Rao - Project Director / Owner)</option>
+              <option value="purchase.lead">purchase.lead (Ashok Mohanty - Commercial Purchase Lead)</option>
+              <option value="maint.eng">maint.eng (Pradeep Rout - Rigging Maintenance Eng.)</option>
+              <option value="site.viewer">site.viewer (JTRWF Client Store Auditor)</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="beds-label" style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 4px;">Password</label>
+            <input type="password" class="beds-input" id="store-login-pass" value="Store@2026!" required style="width: 100%;">
+          </div>
+        </div>
+        <div class="beds-modal-footer" style="padding: 12px 16px; border-top: 1px solid var(--beds-border); display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="beds-btn beds-btn-secondary" onclick="document.getElementById('modal-login').classList.remove('active')">Cancel</button>
+          <button type="submit" class="beds-btn beds-btn-primary">Authorize & Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 
   <!-- Application Scripts -->
   <script src="assets/js/config.js"></script>
@@ -1817,6 +1860,7 @@
   <script src="assets/js/tool-data.js"></script>
   <script src="assets/js/dossier-360.js"></script>
   <script src="assets/js/beds-superadmin.js"></script>
+  <script src="assets/js/beds-portal-login.js"></script>
   <script src="assets/js/beds-workspace.js"></script>
   <script src="assets/js/qr-generator.js"></script>
   <script src="assets/js/app.js"></script>

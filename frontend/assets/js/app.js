@@ -95,11 +95,16 @@ const BalsonsStoreApp = {
     const switchBtn = document.getElementById('btn-switch-user');
     if (switchBtn) {
       switchBtn.addEventListener('click', () => {
-        const roles = ['StoreManager', 'Owner', 'PurchaseManager', 'MaintenanceEngineer', 'Viewer'];
-        const currentIdx = roles.indexOf(user.role);
-        const nextRole = roles[(currentIdx + 1) % roles.length];
-        BalsonsStoreAuth.switchRole(nextRole);
-        window.location.reload();
+        const modal = document.getElementById('modal-login');
+        if (modal) {
+          modal.classList.add('active');
+        } else {
+          const roles = ['StoreManager', 'Owner', 'PurchaseManager', 'MaintenanceEngineer', 'Viewer'];
+          const currentIdx = roles.indexOf(user.role);
+          const nextRole = roles[(currentIdx + 1) % roles.length];
+          BalsonsStoreAuth.switchRole(nextRole);
+          window.location.reload();
+        }
       });
     }
   },
@@ -117,29 +122,33 @@ const BalsonsStoreApp = {
   },
 
   loadData: function() {
-    // 1. Tools
-    const savedTools = localStorage.getItem(BALSONS_STORE_CONFIG.STORAGE_KEYS.TOOLS);
-    this.tools = savedTools ? JSON.parse(savedTools) : [...BALSONS_STORE_DATA.tools];
+    function safeParse(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        console.warn(`[StoreApp] Safe parse fallback for ${key}:`, e);
+        return fallback;
+      }
+    }
+
+    // 1. Tools (Locked 264 Master items)
+    this.tools = safeParse(BALSONS_STORE_CONFIG.STORAGE_KEYS.TOOLS, [...BALSONS_STORE_DATA.tools]);
 
     // 2. Transactions
-    const savedTx = localStorage.getItem(BALSONS_STORE_CONFIG.STORAGE_KEYS.TRANSACTIONS);
-    this.transactions = savedTx ? JSON.parse(savedTx) : [...BALSONS_STORE_DATA.transactions];
+    this.transactions = safeParse(BALSONS_STORE_CONFIG.STORAGE_KEYS.TRANSACTIONS, [...BALSONS_STORE_DATA.transactions]);
 
     // 3. Receipts
-    const savedRc = localStorage.getItem(BALSONS_STORE_CONFIG.STORAGE_KEYS.RECEIPTS);
-    this.receipts = savedRc ? JSON.parse(savedRc) : [...BALSONS_STORE_DATA.receipts];
+    this.receipts = safeParse(BALSONS_STORE_CONFIG.STORAGE_KEYS.RECEIPTS, [...BALSONS_STORE_DATA.receipts]);
 
     // 4. Quarantine
-    const savedQr = localStorage.getItem(BALSONS_STORE_CONFIG.STORAGE_KEYS.QUARANTINE);
-    this.quarantine = savedQr ? JSON.parse(savedQr) : [...BALSONS_STORE_DATA.quarantine];
+    this.quarantine = safeParse(BALSONS_STORE_CONFIG.STORAGE_KEYS.QUARANTINE, [...BALSONS_STORE_DATA.quarantine]);
 
     // 5. Procurement
-    const savedPr = localStorage.getItem(BALSONS_STORE_CONFIG.STORAGE_KEYS.PROCUREMENT);
-    this.procurement = savedPr ? JSON.parse(savedPr) : [...BALSONS_STORE_DATA.procurement];
+    this.procurement = safeParse(BALSONS_STORE_CONFIG.STORAGE_KEYS.PROCUREMENT, [...BALSONS_STORE_DATA.procurement]);
 
     // 6. Vendors
-    const savedVn = localStorage.getItem(BALSONS_STORE_CONFIG.STORAGE_KEYS.VENDORS);
-    this.vendors = savedVn ? JSON.parse(savedVn) : [...BALSONS_STORE_DATA.vendors];
+    this.vendors = safeParse(BALSONS_STORE_CONFIG.STORAGE_KEYS.VENDORS, [...BALSONS_STORE_DATA.vendors]);
   },
 
   saveTools: function() {
@@ -1402,3 +1411,33 @@ const BalsonsStoreApp = {
 };
 
 window.BalsonsStoreApp = BalsonsStoreApp;
+
+window.onStoreUserSelectChange = function(sel) {
+  const passwords = {
+    'store.head': 'Store@2026!',
+    'admin': 'Admin@2026!',
+    'purchase.lead': 'Purchase@2026!',
+    'maint.eng': 'Maint@2026!',
+    'site.viewer': 'Viewer@2026!'
+  };
+  const passEl = document.getElementById('store-login-pass');
+  if (passEl && passwords[sel.value]) passEl.value = passwords[sel.value];
+};
+
+window.handleStoreLogin = function(e) {
+  if (e) e.preventDefault();
+  const username = document.getElementById('store-login-user').value;
+  const pass = document.getElementById('store-login-pass').value;
+  const res = BalsonsStoreAuth.login(username, pass);
+  if (res && res.success) {
+    const modal = document.getElementById('modal-login');
+    if (modal) modal.classList.remove('active');
+    window.location.reload();
+  } else {
+    const errEl = document.getElementById('storeLoginError');
+    if (errEl) {
+      errEl.textContent = res ? res.message : 'Invalid credentials';
+      errEl.style.display = 'block';
+    }
+  }
+};

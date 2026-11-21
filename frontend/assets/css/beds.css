@@ -1221,3 +1221,290 @@ table.beds-data-table tr:hover td, table.data-table tr:hover td {
   border-bottom-color: var(--beds-teal-primary);
   font-weight: 800;
 }
+
+
+/* ─── 14. BEDS V1.1 UNIFIED BRANDED LOGIN SCREEN SPECIFICATION ─── */
+.beds-login-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(16, 45, 53, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.beds-login-wrapper.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.beds-login-card {
+  width: 100%;
+  max-width: 900px;
+  background: var(--beds-bg-panel);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--beds-border);
+  display: flex;
+  flex-direction: row;
+  min-height: 520px;
+}
+.beds-login-left {
+  flex: 1 1 50%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-color: #102D35;
+  min-height: 520px;
+}
+.beds-login-left-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.beds-login-left-overlay {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(to top, rgba(16, 45, 53, 0.98) 0%, rgba(16, 45, 53, 0.75) 60%, transparent 100%);
+  padding: 24px 20px 20px;
+  color: #FFFFFF;
+}
+.beds-login-portal-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+.beds-login-portal-sub {
+  font-size: 11px;
+  color: var(--beds-teal-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 14px 0;
+}
+.beds-login-pills-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.beds-login-badge-pill {
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.beds-login-right {
+  flex: 1 1 50%;
+  padding: 34px 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  background: var(--beds-bg-panel);
+}
+.beds-login-brand-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.beds-login-brand-header img {
+  height: 38px !important;
+  width: auto !important;
+  max-height: 38px !important;
+  object-fit: contain !important;
+  margin: 0 auto 6px;
+  display: block;
+}
+.beds-login-slogan {
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 700;
+  color: var(--beds-text-muted);
+  margin-bottom: 14px;
+}
+.beds-login-banner {
+  background: var(--beds-teal-primary);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: center;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 151, 178, 0.3);
+}
+.beds-login-field-wrap {
+  margin-bottom: 12px;
+}
+.beds-login-field {
+  display: flex;
+  align-items: center;
+  background: var(--beds-bg-page);
+  border: 1px solid var(--beds-border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  transition: all var(--beds-transition);
+}
+.beds-login-field:focus-within {
+  border-color: var(--beds-teal-primary);
+  box-shadow: 0 0 0 2px var(--beds-teal-ring);
+  background: var(--beds-bg-panel);
+}
+.beds-login-field span.beds-field-icon {
+  font-size: 14px;
+  margin-right: 10px;
+  color: var(--beds-text-muted);
+}
+.beds-login-field input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 9px 0;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--beds-text-primary);
+  outline: none;
+}
+.beds-login-field button.beds-pw-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--beds-text-muted);
+  padding: 4px;
+}
+.beds-login-field button.beds-pw-toggle:hover {
+  color: var(--beds-text-primary);
+}
+.beds-login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  margin-bottom: 16px;
+}
+.beds-login-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--beds-text-secondary);
+  font-weight: 500;
+}
+.beds-login-options a.beds-forgot-pw {
+  color: var(--beds-teal-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+.beds-login-options a.beds-forgot-pw:hover {
+  text-decoration: underline;
+}
+.beds-login-submit-btn {
+  background: #E64646;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  padding: 11px 16px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--beds-transition);
+  box-shadow: 0 3px 10px rgba(230, 70, 70, 0.35);
+}
+.beds-login-submit-btn:hover {
+  background: #C53030;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(230, 70, 70, 0.45);
+}
+.beds-login-security-footer {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #10B981;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.beds-login-security-footer span.security-check {
+  font-size: 13px;
+}
+.beds-login-alert {
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  margin-bottom: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+.beds-login-alert.alert-error {
+  background: rgba(230, 70, 70, 0.1);
+  border: 1px solid #E64646;
+  color: #DC2626;
+}
+.beds-login-alert.alert-success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid #10B981;
+  color: #059669;
+}
+
+@media (max-width: 767px) {
+  .beds-login-wrapper {
+    padding: 8px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+  .beds-login-card {
+    flex-direction: column !important;
+    min-height: auto;
+  }
+  .beds-login-left {
+    min-height: 220px !important;
+    flex: none;
+  }
+  .beds-login-right {
+    padding: 24px 18px !important;
+    flex: none;
+  }
+  .beds-login-portal-title {
+    font-size: 17px !important;
+  }
+  .beds-login-portal-sub {
+    font-size: 10px !important;
+  }
+}
