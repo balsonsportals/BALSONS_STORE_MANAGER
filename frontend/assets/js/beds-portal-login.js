@@ -46,7 +46,7 @@
       code: 'operations',
       title: 'Operations & Heavy Lift Portal',
       sub: 'Erection | Heavy Haulage | SPMT | Crane Logistics',
-      image: 'assets/images/login-safety.jpg',
+      image: 'assets/images/login-operations.jpg',
       pills: ['Erection', 'Heavy Lift', 'SPMT', 'Logistics'],
       allowedRoles: ['Super Administrator', 'Management / Director', 'Portal Administrator', 'HOD / Department Head', 'Manager / Supervisor']
     },
@@ -54,7 +54,7 @@
       code: 'purchase',
       title: 'Purchase & Procurement Manager',
       sub: 'Vendor | RFQ | Purchase Orders | GRN | Commercial',
-      image: 'assets/images/login-store.jpg',
+      image: 'assets/images/login-purchase.jpg',
       pills: ['Vendor', 'RFQ', 'Orders', 'Commercial'],
       allowedRoles: ['Super Administrator', 'Management / Director', 'Portal Administrator', 'HOD / Department Head', 'Manager / Supervisor']
     },

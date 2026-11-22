@@ -397,13 +397,13 @@
       return 'launcher';
     },
 
-    canAccessPortal: function(portalCode) {
-      if (this.isSuperAdmin()) return true; // Rule 1 & 2: Super Admin has complete global access
-      const user = this.getCurrentUser();
+    canAccessPortal: function(portalCode, specificUser = null) {
+      const user = specificUser || this.getCurrentUser();
       if (!user || user.status !== 'Active') return false;
+      if (user.isSuperAdmin === true || user.role === 'Super Administrator') return true;
       if (portalCode === 'launcher') {
         // Centralised portal is STRICTLY reserved for Super Administrator
-        return Boolean(user.isSuperAdmin === true || user.role === 'Super Administrator');
+        return false;
       }
       return user.permittedPortals && (user.permittedPortals.includes(portalCode) || user.permittedPortals.includes('all'));
     },

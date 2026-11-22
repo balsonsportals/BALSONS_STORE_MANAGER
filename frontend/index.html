@@ -2074,12 +2074,8 @@
   <script src="assets/js/qr-generator.js"></script>
   <script src="assets/js/app.js"></script>
   <script>
-    // Header Dropdowns Outside-Click Handler
+    // Header Dropdowns Outside-Click Handler (User Profile Pill)
     document.addEventListener('click', function(e) {
-      if (!e.target.closest('#portalSwitcherWrap')) {
-        var w = document.getElementById('portalSwitcherWrap');
-        if (w) w.classList.remove('open');
-      }
       if (!e.target.closest('#userPillWrap')) {
         var u = document.getElementById('userPillWrap');
         if (u) u.classList.remove('open');
