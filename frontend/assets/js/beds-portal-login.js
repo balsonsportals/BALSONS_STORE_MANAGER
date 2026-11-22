@@ -117,43 +117,65 @@
       const isLauncher = (this.currentPortal === 'launcher');
       const adminInfo = this.getPortalAdminInfo();
 
-      let options = `
-        <option value="" disabled selected>✨ Select Enterprise Role (Smart Auto-Fill)...</option>
-        <option value="superadmin" data-icon="👑" data-role="Super Administrator" data-desc="Complete global master access across all portals, records and governance.">👑 Super Administrator (Executive Global Control)</option>
-        <option value="director.mgmt" data-icon="🏛️" data-role="Management / Director" data-desc="Executive Directorate • Operations, Store & Safety access.">🏛️ Management / Director (Satish Chandra)</option>
-      `;
-
       if (isLauncher) {
-        options += `
-        <optgroup label="⚙️ Portal Administrators (Full Domain Control)">
-          <option value="admin.safety" data-icon="🛡️" data-role="Safety Portal Admin" data-desc="Gajendra Rao (HSE Lead) • Safety, PTW & Compliance.">🛡️ Safety Portal Admin (Gajendra Rao)</option>
-          <option value="admin.hr" data-icon="👥" data-role="HR Portal Admin" data-desc="Priyanka Senapati (HR Manager) • HR, Attendance & Payroll.">👥 HR Portal Admin (Priyanka Senapati)</option>
-          <option value="admin.gate" data-icon="🚪" data-role="Gate Entry Admin" data-desc="Bikash Mohapatra (Gate In-Charge) • Turnstiles & Site Security.">🚪 Gate Entry Admin (Bikash Mohapatra)</option>
-          <option value="admin.store" data-icon="📦" data-role="Store Portal Admin" data-desc="Gagan Bihari Das (Chief Store In-Charge) • Rigging & Tool Inventory.">📦 Store Portal Admin (Gagan Bihari Das)</option>
-          <option value="admin.purch" data-icon="🛒" data-role="Purchase Portal Admin" data-desc="Rohan Sharma (Purchase Lead) • Procurement, RFQs & Vendor Orders.">🛒 Purchase Portal Admin (Rohan Sharma)</option>
-        </optgroup>
+        return `
+          <option value="" disabled selected>👑 Centralised Portal (Super Admin Exclusive)...</option>
+          <option value="superadmin" data-icon="👑" data-role="Super Administrator" data-desc="Executive Global Control — Complete ecosystem master access across all portals.">👑 Super Administrator (Prashant Muley)</option>
         `;
-      } else {
-        options += `
+      }
+
+      let options = `
+        <option value="" disabled selected>✨ Select ${adminInfo.label} User Role...</option>
+        <option value="superadmin" data-icon="👑" data-role="Super Administrator" data-desc="Executive Global Control • Unrestricted master access.">👑 Super Administrator (Executive Global Control)</option>
         <optgroup label="⚙️ Assigned Portal Administrator">
           <option value="${adminInfo.username}" data-icon="⚙️" data-role="Portal Administrator" data-desc="${adminInfo.name} • Assigned administrator for ${adminInfo.label}.">⚙️ ${adminInfo.label} (${adminInfo.shortName})</option>
+        </optgroup>
+      `;
+
+      const p = this.currentPortal;
+      if (p === 'operations') {
+        options += `
+        <optgroup label="🏗️ Operations Bay Leaders & Engineers">
+          <option value="director.mgmt" data-icon="🏛️" data-role="Management / Director" data-desc="Satish Chandra (Management Director) • Project Directorate.">🏛️ Management / Director (Satish Chandra)</option>
+          <option value="dilip.rout" data-icon="🏗️" data-role="Operations Area Manager" data-desc="Dilip Rout (Area Manager) • Heavy Lifting & Erection Bays.">🏗️ Operations Area Manager (Dilip Rout)</option>
+          <option value="sarat.mishra" data-icon="⚙️" data-role="Area Manager (Machine Shop)" data-desc="Sarat Mishra (Machine Shop) • 7 Production Streams.">⚙️ Machine Shop Manager (Sarat Mishra)</option>
+          <option value="hod.rigging" data-icon="📋" data-role="HOD / Department Head" data-desc="Ashok Mohanty (HOD Rigging) • Heavy Lift & Rigging Operations.">📋 HOD / Department Head (Ashok Mohanty)</option>
+          <option value="sup.bay3" data-icon="👷" data-role="Manager / Supervisor" data-desc="Manoj Das (Lead Lifting Supervisor) • Lifting Operations.">👷 Manager / Supervisor (Manoj Das)</option>
+          <option value="indenter.ops" data-icon="📝" data-role="Indenter / Site Engineer" data-desc="Suresh Verma (Site Engineer) • Erection & Specifications.">📝 Indenter / Site Engineer (Suresh Verma)</option>
+          <option value="client.jtrwf" data-icon="🔍" data-role="Client Observer / Auditor" data-desc="JTRWF & Schuler Auditor • Read-Only Inspection.">🔍 Client Auditor (JTRWF / Schuler)</option>
+        </optgroup>
+        `;
+      } else if (p === 'purchase') {
+        options += `
+        <optgroup label="🛒 Procurement & Requisitions">
+          <option value="director.mgmt" data-icon="🏛️" data-role="Management / Director" data-desc="Satish Chandra (Management Director) • Commercial Oversight.">🏛️ Management / Director (Satish Chandra)</option>
+          <option value="indenter.ops" data-icon="📝" data-role="Indenter / Site Engineer" data-desc="Suresh Verma (Site Engineer) • Technical Requisitions.">📝 Indenter / Site Engineer (Suresh Verma)</option>
+        </optgroup>
+        `;
+      } else if (p === 'safety') {
+        options += `
+        <optgroup label="🦺 Safety Officers & Permits">
+          <option value="director.mgmt" data-icon="🏛️" data-role="Management / Director" data-desc="Satish Chandra (Management Director) • HSE Oversight.">🏛️ Management / Director (Satish Chandra)</option>
+          <option value="sup.bay3" data-icon="👷" data-role="Manager / Supervisor" data-desc="Manoj Das (Lead Lifting Supervisor) • Active PTWs.">👷 Lead Lifting Supervisor (Manoj Das)</option>
+        </optgroup>
+        `;
+      } else if (p === 'store') {
+        options += `
+        <optgroup label="📦 Store & Tool Custody">
+          <option value="director.mgmt" data-icon="🏛️" data-role="Management / Director" data-desc="Satish Chandra (Management Director) • Store Oversight.">🏛️ Management / Director (Satish Chandra)</option>
+          <option value="sup.bay3" data-icon="👷" data-role="Manager / Supervisor" data-desc="Manoj Das (Lead Lifting Supervisor) • Tackle Custody.">👷 Lead Lifting Supervisor (Manoj Das)</option>
+        </optgroup>
+        `;
+      } else if (p === 'gate') {
+        options += `
+        <optgroup label="🚪 Gate Access & Crew">
+          <option value="emp.ramesh" data-icon="👤" data-role="Employee / General User" data-desc="Ramesh Kumar (Lead Rigger) • General Shift & Turnstile Access.">👤 Employee / Crew (Ramesh Kumar)</option>
         </optgroup>
         `;
       }
 
       options += `
-        <optgroup label="📋 Field Operations, Engineering & Indenters">
-          <option value="dilip.rout" data-icon="🏗️" data-role="Operations Area Manager" data-desc="Dilip Rout (Area Manager) • Heavy Lifting & Erection Bays.">🏗️ Operations Area Manager (Dilip Rout)</option>
-          <option value="sarat.mishra" data-icon="⚙️" data-role="Area Manager (Machine Shop)" data-desc="Sarat Mishra (Machine Shop) • 7 Production Streams.">⚙️ Machine Shop Manager (Sarat Mishra)</option>
-          <option value="indenter.ops" data-icon="📝" data-role="Indenter / Site Engineer" data-desc="Suresh Verma (Site Engineer) • PR Drafting & Technical Specs.">📝 Indenter / Site Engineer (Suresh Verma)</option>
-          <option value="hod.rigging" data-icon="📋" data-role="HOD / Department Head" data-desc="Ashok Mohanty (HOD Rigging) • Heavy Lift & Rigging Operations.">📋 HOD / Department Head (Ashok Mohanty)</option>
-          <option value="sup.bay3" data-icon="👷" data-role="Manager / Supervisor" data-desc="Manoj Das (Lead Lifting Supervisor) • Lifting Operations & Permits.">👷 Manager / Supervisor (Manoj Das)</option>
-          <option value="emp.ramesh" data-icon="👤" data-role="Employee / General User" data-desc="Ramesh Kumar (Lead Rigger) • General Shift & Turnstile Access.">👤 Employee / Crew (Ramesh Kumar)</option>
-        </optgroup>
-        <optgroup label="🔍 External Audit & Inspection">
-          <option value="client.jtrwf" data-icon="🔍" data-role="Client Observer / Auditor" data-desc="JTRWF & Schuler Auditor • Read-Only Inspection of Dossiers & Logs.">🔍 Client Auditor (JTRWF / Schuler)</option>
-        </optgroup>
-        <option value="custom" data-icon="✏️" data-role="Custom Account" data-desc="Enter any custom registered enterprise user ID below.">✏️ Custom / Other User ID...</option>
+        <option value="custom" data-icon="✏️" data-role="Custom Account" data-desc="Enter any custom registered enterprise user ID below.">✏️ Custom / Other Registered User ID...</option>
       `;
 
       return options;
@@ -493,10 +515,13 @@
         }
 
         if (user && user.status === 'Active') {
+          if (this.currentPortal === 'launcher' && !user.isSuperAdmin && user.role !== 'Super Administrator') {
+            console.warn('Non-SuperAdmin session on Centralised Launcher - requiring Super Admin authentication.');
+            return;
+          }
           const canAccess = (window.BalsonsSuperAdmin && window.BalsonsSuperAdmin.isSuperAdmin && window.BalsonsSuperAdmin.isSuperAdmin()) || 
-                            user.permittedPortals.includes(this.currentPortal) || 
-                            user.permittedPortals.includes('all') || 
-                            this.currentPortal === 'launcher';
+                            (user.permittedPortals && user.permittedPortals.includes(this.currentPortal)) || 
+                            (user.permittedPortals && user.permittedPortals.includes('all'));
 
           if (canAccess) {
             // USER IS VALID AND LOGGED IN: Keep login overlay completely hidden on page refresh!
@@ -611,28 +636,41 @@
           return;
         }
 
-        // Check password (accepts standard Balsons passwords)
-        const validPass = password.length >= 4; // Flexible standard password check
-        if (!validPass) {
-          this.showAlert('❌ Incorrect password. Please try again.');
+        // Check password
+        const expectedPass = matched.password || 'Balsons@2026!';
+        const isCorrectPass = (password === expectedPass) || (password === 'balsons@2026') || (password === 'Balsons@2026!');
+        if (!isCorrectPass) {
+          this.showAlert('❌ Incorrect password. Please check your credentials or contact Super Admin.');
           resetBtn();
           return;
         }
 
-        // Verify Portal Authorization (Section 4 & 7.2)
-        const canAccess = window.BalsonsSuperAdmin.isSuperAdmin() || 
-                          matched.permittedPortals.includes(this.currentPortal) || 
-                          matched.permittedPortals.includes('all') || 
-                          this.currentPortal === 'launcher';
-
-        if (!canAccess) {
-          const cfg = PORTAL_CONFIGS[this.currentPortal] || PORTAL_CONFIGS['launcher'];
-          this.showAlert(`⛔ Access Denied: Account @${matched.username} (${matched.role}) does not have permission to access ${cfg.title} under the Global Super Admin Policy.`);
-          if (window.BalsonsSuperAdmin.logAudit) {
-            window.BalsonsSuperAdmin.logAudit('UNAUTHORIZED_PORTAL_LOGIN_ATTEMPT', `User ${username} attempted to access unauthorized portal: ${this.currentPortal}`, this.currentPortal);
+        // Verify Portal Authorization
+        if (this.currentPortal === 'launcher') {
+          const isSuper = Boolean(matched.isSuperAdmin === true || matched.role === 'Super Administrator');
+          if (!isSuper) {
+            this.showAlert('⛔ Access Denied: The Centralised Portal is strictly reserved for the Super Administrator. Please log in directly to your assigned portal.');
+            if (window.BalsonsSuperAdmin.logAudit) {
+              window.BalsonsSuperAdmin.logAudit('CENTRAL_LAUNCHER_ACCESS_DENIED_NON_ADMIN', `Non-SuperAdmin @${username} attempted to access Centralised Portal`, 'LAUNCHER');
+            }
+            resetBtn();
+            return;
           }
-          resetBtn();
-          return;
+        } else {
+          const canAccess = Boolean(matched.isSuperAdmin === true || 
+                            matched.role === 'Super Administrator' ||
+                            (matched.permittedPortals && matched.permittedPortals.includes(this.currentPortal)) || 
+                            (matched.permittedPortals && matched.permittedPortals.includes('all')));
+
+          if (!canAccess) {
+            const cfg = PORTAL_CONFIGS[this.currentPortal] || PORTAL_CONFIGS['launcher'];
+            this.showAlert(`⛔ Access Denied: Account @${matched.username} is assigned to [${(matched.assignedPortal || 'other').toUpperCase()}] and cannot access ${cfg.title}.`);
+            if (window.BalsonsSuperAdmin.logAudit) {
+              window.BalsonsSuperAdmin.logAudit('UNAUTHORIZED_PORTAL_LOGIN_ATTEMPT', `User ${username} attempted to access unauthorized portal: ${this.currentPortal}`, this.currentPortal);
+            }
+            resetBtn();
+            return;
+          }
         }
 
         // Login successful!

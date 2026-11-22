@@ -44,7 +44,9 @@
       fullName: 'Prashant Muley (Executive Super Administrator)',
       role: 'Super Administrator',
       dept: 'Executive Directorate',
+      password: 'Balsons@2026!',
       permittedPortals: ['all', 'operations', 'purchase', 'safety', 'hr', 'gate', 'store', 'launcher', 'reports'],
+      assignedPortal: 'all',
       isSuperAdmin: true,
       locked: true,
       status: 'Active',
@@ -56,19 +58,23 @@
       fullName: 'Satish Chandra (Management Director)',
       role: 'Management / Director',
       dept: 'Project Directorate - JTRWF',
-      permittedPortals: ['operations', 'purchase', 'store', 'safety', 'launcher'],
+      password: 'Director@2026',
+      permittedPortals: ['operations', 'purchase', 'store', 'safety'],
+      assignedPortal: 'operations',
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
       avatar: '🏛️',
-      description: 'Only portals and information specifically assigned by the Super Administrator.'
+      description: 'Management Directorate oversight for site operations, logistics and safety.'
     },
     {
       username: 'dilip.rout',
       fullName: 'Dilip Rout (Operations Area Manager)',
       role: 'Operations Area Manager',
       dept: 'Heavy Lifting (Bay 3 / Line Axle)',
-      permittedPortals: ['operations', 'store', 'safety', 'launcher'],
+      password: 'Ops@2026',
+      permittedPortals: ['operations'],
+      assignedPortal: 'operations',
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -80,7 +86,9 @@
       fullName: 'Sarat Mishra (Machine Shop Area Manager)',
       role: 'Area Manager (Machine Shop)',
       dept: 'Machine Shop Bay (7 Streams)',
-      permittedPortals: ['operations', 'launcher'],
+      password: 'Shop@2026',
+      permittedPortals: ['operations'],
+      assignedPortal: 'operations',
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -92,8 +100,9 @@
       fullName: 'Gagan Bihari Das (Chief Store In-Charge)',
       role: 'Portal Administrator',
       dept: 'Store & Rigging Inventory',
+      password: 'Store@2026',
       assignedPortal: 'store',
-      permittedPortals: ['store', 'purchase', 'launcher'],
+      permittedPortals: ['store'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -105,8 +114,9 @@
       fullName: 'Gajendra Rao (HSE Lead & Safety Steward)',
       role: 'Portal Administrator',
       dept: 'Health, Safety & Environment',
+      password: 'Safety@2026',
       assignedPortal: 'safety',
-      permittedPortals: ['safety', 'launcher'],
+      permittedPortals: ['safety'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -118,8 +128,9 @@
       fullName: 'Bikash Mohapatra (Gate In-Charge)',
       role: 'Portal Administrator',
       dept: 'Site Security & Turnstile Access',
+      password: 'Gate@2026',
       assignedPortal: 'gate',
-      permittedPortals: ['gate', 'launcher'],
+      permittedPortals: ['gate'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -131,8 +142,9 @@
       fullName: 'Priyanka Senapati (HR Manager)',
       role: 'Portal Administrator',
       dept: 'Human Resources & Payroll',
+      password: 'HR@2026',
       assignedPortal: 'hr',
-      permittedPortals: ['hr', 'launcher'],
+      permittedPortals: ['hr'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -144,8 +156,9 @@
       fullName: 'Rohan Sharma (Purchase Lead & Commercial Head)',
       role: 'Portal Administrator',
       dept: 'Commercial Procurement & Contracts',
+      password: 'Purchase@2026',
       assignedPortal: 'purchase',
-      permittedPortals: ['purchase', 'store', 'launcher'],
+      permittedPortals: ['purchase'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -157,7 +170,9 @@
       fullName: 'Suresh Verma (Indenter & Erection Engineer)',
       role: 'Indenter / Site Engineer',
       dept: 'Mechanical Erection & Rigging',
-      permittedPortals: ['purchase', 'operations', 'launcher'],
+      password: 'Site@2026',
+      assignedPortal: 'purchase',
+      permittedPortals: ['purchase', 'operations'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -169,7 +184,9 @@
       fullName: 'Ashok Mohanty (HOD Rigging & Heavy Lift)',
       role: 'HOD / Department Head',
       dept: 'Heavy Rigging Department',
-      permittedPortals: ['operations', 'store', 'safety', 'launcher'],
+      password: 'Rigging@2026',
+      assignedPortal: 'operations',
+      permittedPortals: ['operations'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -181,7 +198,9 @@
       fullName: 'Manoj Das (Lead Lifting Supervisor Bay-3)',
       role: 'Manager / Supervisor',
       dept: 'Bay-3 Lifting Operations',
-      permittedPortals: ['operations', 'store', 'safety', 'launcher'],
+      password: 'Bay3@2026',
+      assignedPortal: 'operations',
+      permittedPortals: ['operations'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -193,7 +212,9 @@
       fullName: 'Ramesh Kumar (Senior Certified Rigger)',
       role: 'Employee / General User',
       dept: 'Rigging Crew Bay-3',
-      permittedPortals: ['gate', 'hr', 'launcher'],
+      password: 'Worker@2026',
+      assignedPortal: 'gate',
+      permittedPortals: ['gate'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -205,7 +226,9 @@
       fullName: 'Client Inspection Auditor (JTRWF / Schuler)',
       role: 'Client Observer / Auditor',
       dept: 'Jupiter Tatravagonka Railwheel / Schuler',
-      permittedPortals: ['operations', 'launcher', 'reports'],
+      password: 'Audit@2026',
+      assignedPortal: 'operations',
+      permittedPortals: ['operations', 'reports'],
       isSuperAdmin: false,
       locked: false,
       status: 'Active',
@@ -233,6 +256,27 @@
         const raw = localStorage.getItem(STORAGE_KEYS.USERS);
         if (raw) {
           this.users = JSON.parse(raw);
+          // Migration check: ensure every user has a password and strip launcher from non-superadmins
+          let mutated = false;
+          this.users.forEach(u => {
+            if (!u.password) {
+              const def = DEFAULT_USERS.find(d => d.username === u.username);
+              u.password = def ? def.password : 'Balsons@2026!';
+              mutated = true;
+            }
+            if (!u.assignedPortal) {
+              const def = DEFAULT_USERS.find(d => d.username === u.username);
+              u.assignedPortal = def ? def.assignedPortal : (u.permittedPortals[0] || 'gate');
+              mutated = true;
+            }
+            if (!u.isSuperAdmin && u.role !== 'Super Administrator') {
+              if (u.permittedPortals && u.permittedPortals.includes('launcher')) {
+                u.permittedPortals = u.permittedPortals.filter(p => p !== 'launcher');
+                mutated = true;
+              }
+            }
+          });
+          if (mutated) this.saveUsers();
         } else {
           this.users = JSON.parse(JSON.stringify(DEFAULT_USERS));
           this.saveUsers();
@@ -357,7 +401,10 @@
       if (this.isSuperAdmin()) return true; // Rule 1 & 2: Super Admin has complete global access
       const user = this.getCurrentUser();
       if (!user || user.status !== 'Active') return false;
-      if (portalCode === 'launcher') return true;
+      if (portalCode === 'launcher') {
+        // Centralised portal is STRICTLY reserved for Super Administrator
+        return Boolean(user.isSuperAdmin === true || user.role === 'Super Administrator');
+      }
       return user.permittedPortals && (user.permittedPortals.includes(portalCode) || user.permittedPortals.includes('all'));
     },
 
@@ -413,6 +460,65 @@
       // Reload page to reflect authority level across all UI elements
       window.location.reload();
       return true;
+    },
+
+    updateUser: function(username, updateData) {
+      const user = this.users.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (!user) throw new Error(`User "${username}" not found.`);
+      if (user.isSuperAdmin || user.role === 'Super Administrator') {
+        if (updateData.role && updateData.role !== 'Super Administrator') {
+          throw new Error('SECURITY VIOLATION: Cannot modify the role of Master Super Administrator.');
+        }
+        if (updateData.status && updateData.status !== 'Active') {
+          throw new Error('SECURITY VIOLATION: Cannot deactivate the Master Super Administrator account.');
+        }
+      }
+      if (updateData.fullName) user.fullName = updateData.fullName.trim();
+      if (updateData.dept) user.dept = updateData.dept.trim();
+      if (!user.isSuperAdmin) {
+        if (updateData.role) user.role = updateData.role;
+        if (updateData.assignedPortal) {
+          user.assignedPortal = updateData.assignedPortal;
+          user.permittedPortals = [updateData.assignedPortal];
+        }
+        if (updateData.status) user.status = updateData.status;
+      }
+      if (updateData.password) user.password = updateData.password;
+      this.saveUsers();
+      this.logAudit('USER_UPDATED', `Updated user details for ${username}`, username);
+      return user;
+    },
+
+    updateUserPassword: function(username, newPassword) {
+      if (!newPassword || newPassword.length < 4) {
+        throw new Error('Password must be at least 4 characters long.');
+      }
+      const user = this.users.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (!user) throw new Error(`User "${username}" not found.`);
+      user.password = newPassword;
+      this.saveUsers();
+      this.logAudit('PASSWORD_CHANGED', `Password updated for user ${username}`, username);
+      return true;
+    },
+
+    deleteUser: function(username) {
+      const user = this.users.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (!user) throw new Error(`User "${username}" not found.`);
+      if (user.isSuperAdmin || user.locked || user.username === 'superadmin') {
+        this.logAudit('SECURITY_VIOLATION_BLOCKED', 'Attempted deletion of Master Super Administrator was blocked.', username);
+        throw new Error('SECURITY VIOLATION: The Master Super Administrator account cannot be deleted.');
+      }
+      this.users = this.users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
+      this.saveUsers();
+      this.logAudit('USER_DELETED', `Deleted user account ${username}`, username);
+      return true;
+    },
+
+    resetDefaultUsers: function() {
+      this.users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+      this.saveUsers();
+      this.logAudit('ROSTER_RESET_DEFAULTS', 'Reset all enterprise user accounts to default roster baseline', 'USERS');
+      return this.users;
     },
 
     createUser: function(data) {
