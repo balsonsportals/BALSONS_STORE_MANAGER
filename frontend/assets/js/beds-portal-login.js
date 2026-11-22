@@ -105,10 +105,10 @@
         'hr': { username: 'admin.hr', name: 'Priyanka Senapati (HR Manager)', shortName: 'Priyanka Senapati', label: 'HR Portal Admin' },
         'gate': { username: 'admin.gate', name: 'Bikash Mohapatra (Gate In-Charge)', shortName: 'Bikash Mohapatra', label: 'Gate Entry Admin' },
         'store': { username: 'admin.store', name: 'Gagan Bihari Das (Chief Store In-Charge)', shortName: 'Gagan Bihari Das', label: 'Store Portal Admin' },
-        'operations': { username: 'director.mgmt', name: 'Satish Chandra', shortName: 'Satish Chandra', label: 'Operations Lead' },
-        'purchase': { username: 'admin.store', name: 'Gagan Bihari Das', shortName: 'Gagan Bihari Das', label: 'Procurement Admin' },
-        'reports': { username: 'superadmin', name: 'Prashant Mohanty', shortName: 'Prashant Mohanty', label: 'Sync Hub Lead' },
-        'launcher': { username: 'superadmin', name: 'Prashant Mohanty', shortName: 'Prashant Mohanty', label: 'Enterprise Lead' }
+        'operations': { username: 'dilip.rout', name: 'Dilip Rout (Operations Area Manager)', shortName: 'Dilip Rout', label: 'Operations Lead' },
+        'purchase': { username: 'admin.purch', name: 'Rohan Sharma (Purchase Lead)', shortName: 'Rohan Sharma', label: 'Purchase Portal Admin' },
+        'reports': { username: 'superadmin', name: 'Prashant Muley', shortName: 'Prashant Muley', label: 'Sync Hub Lead' },
+        'launcher': { username: 'superadmin', name: 'Prashant Muley', shortName: 'Prashant Muley', label: 'Enterprise Lead' }
       };
       return map[p] || map['launcher'];
     },
@@ -120,7 +120,7 @@
       let options = `
         <option value="" disabled selected>✨ Select Enterprise Role (Smart Auto-Fill)...</option>
         <option value="superadmin" data-icon="👑" data-role="Super Administrator" data-desc="Complete global master access across all portals, records and governance.">👑 Super Administrator (Executive Global Control)</option>
-        <option value="director.mgmt" data-icon="🏛️" data-role="Management / Director" data-desc="Executive Directorate • Store & Safety access.">🏛️ Management / Director (Satish Chandra)</option>
+        <option value="director.mgmt" data-icon="🏛️" data-role="Management / Director" data-desc="Executive Directorate • Operations, Store & Safety access.">🏛️ Management / Director (Satish Chandra)</option>
       `;
 
       if (isLauncher) {
@@ -130,6 +130,7 @@
           <option value="admin.hr" data-icon="👥" data-role="HR Portal Admin" data-desc="Priyanka Senapati (HR Manager) • HR, Attendance & Payroll.">👥 HR Portal Admin (Priyanka Senapati)</option>
           <option value="admin.gate" data-icon="🚪" data-role="Gate Entry Admin" data-desc="Bikash Mohapatra (Gate In-Charge) • Turnstiles & Site Security.">🚪 Gate Entry Admin (Bikash Mohapatra)</option>
           <option value="admin.store" data-icon="📦" data-role="Store Portal Admin" data-desc="Gagan Bihari Das (Chief Store In-Charge) • Rigging & Tool Inventory.">📦 Store Portal Admin (Gagan Bihari Das)</option>
+          <option value="admin.purch" data-icon="🛒" data-role="Purchase Portal Admin" data-desc="Rohan Sharma (Purchase Lead) • Procurement, RFQs & Vendor Orders.">🛒 Purchase Portal Admin (Rohan Sharma)</option>
         </optgroup>
         `;
       } else {
@@ -141,10 +142,16 @@
       }
 
       options += `
-        <optgroup label="📋 Field Operations & Supervision">
+        <optgroup label="📋 Field Operations, Engineering & Indenters">
+          <option value="dilip.rout" data-icon="🏗️" data-role="Operations Area Manager" data-desc="Dilip Rout (Area Manager) • Heavy Lifting & Erection Bays.">🏗️ Operations Area Manager (Dilip Rout)</option>
+          <option value="sarat.mishra" data-icon="⚙️" data-role="Area Manager (Machine Shop)" data-desc="Sarat Mishra (Machine Shop) • 7 Production Streams.">⚙️ Machine Shop Manager (Sarat Mishra)</option>
+          <option value="indenter.ops" data-icon="📝" data-role="Indenter / Site Engineer" data-desc="Suresh Verma (Site Engineer) • PR Drafting & Technical Specs.">📝 Indenter / Site Engineer (Suresh Verma)</option>
           <option value="hod.rigging" data-icon="📋" data-role="HOD / Department Head" data-desc="Ashok Mohanty (HOD Rigging) • Heavy Lift & Rigging Operations.">📋 HOD / Department Head (Ashok Mohanty)</option>
-          <option value="sup.bay3" data-icon="👷" data-role="Manager / Supervisor" data-desc="Dilip Rout (Supervisor Bay-3) • Lifting Operations & Permits.">👷 Manager / Supervisor (Dilip Rout)</option>
+          <option value="sup.bay3" data-icon="👷" data-role="Manager / Supervisor" data-desc="Manoj Das (Lead Lifting Supervisor) • Lifting Operations & Permits.">👷 Manager / Supervisor (Manoj Das)</option>
           <option value="emp.ramesh" data-icon="👤" data-role="Employee / General User" data-desc="Ramesh Kumar (Lead Rigger) • General Shift & Turnstile Access.">👤 Employee / Crew (Ramesh Kumar)</option>
+        </optgroup>
+        <optgroup label="🔍 External Audit & Inspection">
+          <option value="client.jtrwf" data-icon="🔍" data-role="Client Observer / Auditor" data-desc="JTRWF & Schuler Auditor • Read-Only Inspection of Dossiers & Logs.">🔍 Client Auditor (JTRWF / Schuler)</option>
         </optgroup>
         <option value="custom" data-icon="✏️" data-role="Custom Account" data-desc="Enter any custom registered enterprise user ID below.">✏️ Custom / Other User ID...</option>
       `;
@@ -238,15 +245,14 @@
         <div class="beds-login-card">
           <!-- LEFT: Realistic Portal-Specific Photograph & Badges -->
           <div class="beds-login-left">
-            <img src="${cfg.image}" alt="${cfg.title}" class="beds-login-left-img" onerror="this.style.display='none'">
-            ${(this.currentPortal === 'launcher' || this.currentPortal === 'operations' || this.currentPortal === 'purchase' || this.currentPortal === 'reports') ? `
+            <img src="${cfg.image}" alt="${cfg.title}" class="beds-login-left-img" onerror="this.src='assets/images/login-gate.jpg'">
             <div class="beds-login-left-overlay">
               <h2 class="beds-login-portal-title">${cfg.title}</h2>
               <div class="beds-login-portal-sub">${cfg.sub}</div>
               <div class="beds-login-pills-row">
                 ${pillsHtml}
               </div>
-            </div>` : ''}
+            </div>
           </div>
 
           <!-- RIGHT: Common Branded Login Panel -->
@@ -400,6 +406,16 @@
         matchedVal = (this.currentPortal === 'launcher') ? 'admin.gate' : this.getPortalAdminInfo().username;
       } else if (val === 'admin.store' || (val.includes('store') && val.includes('admin'))) {
         matchedVal = (this.currentPortal === 'launcher') ? 'admin.store' : this.getPortalAdminInfo().username;
+      } else if (val === 'admin.purch' || (val.includes('purch') && val.includes('admin'))) {
+        matchedVal = (this.currentPortal === 'launcher') ? 'admin.purch' : this.getPortalAdminInfo().username;
+      } else if (val === 'indenter.ops' || val.includes('indenter')) {
+        matchedVal = 'indenter.ops';
+      } else if (val === 'dilip.rout' || val.includes('dilip')) {
+        matchedVal = 'dilip.rout';
+      } else if (val === 'sarat.mishra' || val.includes('sarat')) {
+        matchedVal = 'sarat.mishra';
+      } else if (val === 'client.jtrwf' || val.includes('client') || val.includes('audit')) {
+        matchedVal = 'client.jtrwf';
       } else if (val === 'hod.rigging' || val.includes('hod')) {
         matchedVal = 'hod.rigging';
       } else if (val === 'sup.bay3' || val.includes('sup')) {

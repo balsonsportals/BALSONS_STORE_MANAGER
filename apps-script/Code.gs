@@ -133,14 +133,35 @@ function doPost(e) {
         break;
 
       case 'db.init':
-      case 'loans.issue':
-      case 'loans.return':
-      case 'quarantine.tag':
         responseData = {
           success: false,
           error: 'ENDPOINT_DECOMMISSIONED',
-          message: 'Store Manager operates under an offline-first, zero-server IndexedDB architecture (Sections 4 & 16). Public Apps Script mutation endpoints are decommissioned.'
+          message: 'Database initialization via POST is decommissioned. Use DbInit.gs directly from Apps Script editor.'
         };
+        break;
+
+      case 'loans.issue':
+        if (!payload || !payload.toolId || !payload.empId) {
+          responseData = { success: false, error: 'MISSING_FIELDS', message: 'toolId and empId are required.' };
+        } else {
+          responseData = StoreService.issueToolLoan(payload);
+        }
+        break;
+
+      case 'loans.return':
+        if (!payload || !payload.txId) {
+          responseData = { success: false, error: 'MISSING_FIELDS', message: 'txId is required.' };
+        } else {
+          responseData = StoreService.returnToolLoan(payload.txId, payload.returnCondition, payload.notes);
+        }
+        break;
+
+      case 'quarantine.tag':
+        if (!payload || !payload.toolId) {
+          responseData = { success: false, error: 'MISSING_FIELDS', message: 'toolId is required.' };
+        } else {
+          responseData = StoreService.tagRedQuarantine(payload);
+        }
         break;
 
       default:

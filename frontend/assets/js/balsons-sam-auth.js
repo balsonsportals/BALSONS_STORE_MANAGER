@@ -115,24 +115,79 @@
       isLocked: true // Primary Immutable Account
     },
     {
-      username: "director.management",
+      username: "director.mgmt",
       fullName: "Satish Chandra (Project Director)",
       email: "director@balsons.com",
       role: "MANAGEMENT",
-      assignedPortals: ["safety", "operations", "purchase"],
-      canAccessConfidentialHR: false, // Section 4: Restricted unless authorized
+      assignedPortals: ["safety", "operations", "purchase", "store", "launcher"],
+      canAccessConfidentialHR: false,
       department: "Project Management",
       status: "ACTIVE",
       isLocked: false
     },
     {
-      username: "gate.admin",
-      fullName: "Subrat Mohanty (Gate Portal Admin)",
+      username: "director.management",
+      fullName: "Satish Chandra (Project Director)",
+      email: "director@balsons.com",
+      role: "MANAGEMENT",
+      assignedPortals: ["safety", "operations", "purchase", "store", "launcher"],
+      canAccessConfidentialHR: false,
+      department: "Project Management",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "dilip.rout",
+      fullName: "Dilip Rout (Operations Area Manager)",
+      email: "dilip.rout@balsons.com",
+      role: "SUPERVISOR",
+      assignedPortals: ["operations", "safety", "store", "launcher"],
+      canAccessConfidentialHR: false,
+      department: "Heavy Lifting & Erection Bays",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "sarat.mishra",
+      fullName: "Sarat Mishra (Machine Shop Area Manager)",
+      email: "sarat.mishra@balsons.com",
+      role: "SUPERVISOR",
+      assignedPortals: ["operations", "launcher"],
+      canAccessConfidentialHR: false,
+      department: "Machine Shop Bay (7 Streams)",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "admin.gate",
+      fullName: "Bikash Mohapatra (Gate Portal Admin)",
       email: "gate.admin@balsons.com",
       role: "PORTAL_ADMIN",
       assignedPortals: ["gate_entry"],
       canAccessConfidentialHR: false,
       department: "Security & Site Logistics",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "gate.admin",
+      fullName: "Bikash Mohapatra (Gate Portal Admin)",
+      email: "gate.admin@balsons.com",
+      role: "PORTAL_ADMIN",
+      assignedPortals: ["gate_entry"],
+      canAccessConfidentialHR: false,
+      department: "Security & Site Logistics",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "admin.safety",
+      fullName: "Gajendra Rao (Safety Portal Admin)",
+      email: "safety.admin@balsons.com",
+      role: "PORTAL_ADMIN",
+      assignedPortals: ["safety"],
+      canAccessConfidentialHR: false,
+      department: "HSE & Compliance",
       status: "ACTIVE",
       isLocked: false
     },
@@ -148,6 +203,17 @@
       isLocked: false
     },
     {
+      username: "admin.store",
+      fullName: "Gagan Bihari Das (Store Portal Admin)",
+      email: "store.admin@balsons.com",
+      role: "PORTAL_ADMIN",
+      assignedPortals: ["store"],
+      canAccessConfidentialHR: false,
+      department: "Store & Inventory",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
       username: "store.admin",
       fullName: "Gagan Bihari Das (Store Portal Admin)",
       email: "store.admin@balsons.com",
@@ -159,22 +225,66 @@
       isLocked: false
     },
     {
-      username: "hr.admin",
+      username: "admin.hr",
       fullName: "Priyanka Senapati (HR Portal Admin)",
       email: "hr.admin@balsons.com",
       role: "PORTAL_ADMIN",
       assignedPortals: ["hr_payroll"],
-      canAccessConfidentialHR: true, // Authorized specifically for HR portal
+      canAccessConfidentialHR: true,
       department: "Human Resources",
       status: "ACTIVE",
       isLocked: false
     },
     {
-      username: "hod.lifting",
-      fullName: "Alok Verma (HOD Heavy Lifting)",
-      email: "alok.verma@balsons.com",
+      username: "hr.admin",
+      fullName: "Priyanka Senapati (HR Portal Admin)",
+      email: "hr.admin@balsons.com",
+      role: "PORTAL_ADMIN",
+      assignedPortals: ["hr_payroll"],
+      canAccessConfidentialHR: true,
+      department: "Human Resources",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "admin.purch",
+      fullName: "Rohan Sharma (Purchase Portal Admin)",
+      email: "purchase.lead@balsons.com",
+      role: "PORTAL_ADMIN",
+      assignedPortals: ["purchase", "store"],
+      canAccessConfidentialHR: false,
+      department: "Commercial Procurement & Contracts",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "indenter.ops",
+      fullName: "Suresh Verma (Indenter & Site Engineer)",
+      email: "suresh.verma@balsons.com",
+      role: "EMPLOYEE",
+      assignedPortals: ["purchase", "operations"],
+      canAccessConfidentialHR: false,
+      department: "Mechanical Erection & Rigging",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "hod.rigging",
+      fullName: "Ashok Mohanty (HOD Heavy Lifting)",
+      email: "ashok.mohanty@balsons.com",
       role: "HOD",
-      assignedPortals: ["operations", "safety"],
+      assignedPortals: ["operations", "safety", "store"],
+      canAccessConfidentialHR: false,
+      department: "Heavy Rigging & Lift Engineering",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "hod.lifting",
+      fullName: "Ashok Mohanty (HOD Heavy Lifting)",
+      email: "ashok.mohanty@balsons.com",
+      role: "HOD",
+      assignedPortals: ["operations", "safety", "store"],
       canAccessConfidentialHR: false,
       department: "Heavy Lifting & Erection",
       status: "ACTIVE",
@@ -182,12 +292,12 @@
     },
     {
       username: "sup.bay3",
-      fullName: "Dilip Rout (Area Supervisor Bay-3)",
-      email: "dilip.rout@balsons.com",
+      fullName: "Manoj Das (Lead Lifting Supervisor Bay-3)",
+      email: "manoj.das@balsons.com",
       role: "SUPERVISOR",
-      assignedPortals: ["safety", "gate_entry", "store"],
+      assignedPortals: ["operations", "safety", "gate_entry", "store"],
       canAccessConfidentialHR: false,
-      department: "Site Execution",
+      department: "Bay-3 Lifting Operations",
       status: "ACTIVE",
       isLocked: false
     },
@@ -196,9 +306,20 @@
       fullName: "Ramesh Kumar (Lead Rigger)",
       email: "ramesh.kumar@balsons.com",
       role: "EMPLOYEE",
-      assignedPortals: ["hr_payroll"], // personal info only
+      assignedPortals: ["gate_entry", "hr_payroll"],
       canAccessConfidentialHR: false,
       department: "Rigging Crew",
+      status: "ACTIVE",
+      isLocked: false
+    },
+    {
+      username: "client.jtrwf",
+      fullName: "Client Inspection Auditor (JTRWF / Schuler)",
+      email: "client.jtrwf@balsons.com",
+      role: "MANAGEMENT",
+      assignedPortals: ["operations", "launcher"],
+      canAccessConfidentialHR: false,
+      department: "JTRWF / Schuler Inspection",
       status: "ACTIVE",
       isLocked: false
     }
